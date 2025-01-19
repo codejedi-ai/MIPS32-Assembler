@@ -1,2 +1,5 @@
 /.idea
 /.mypy_cache
+node_modules
+.aider*
+.env
