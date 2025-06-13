@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": [],
-  "sections": [
-    {"offset": {"line": 55, "column": 0}, "map": {"version":3,"sources":["file://D%3A/DDRIVE-Code/Code-NEXT/NEXT-Test-Docker/app/api/pbutton/route.ts"],"sourcesContent":["import { NextResponse } from 'next/server';\r\n\r\nexport async function GET() {\r\n  return NextResponse.json({ \r\n    message: 'Button pressed successfully! 🎉',\r\n    timestamp: new Date().toISOString()\r\n  });\r\n} "],"names":[],"mappings":";;;AAAA;;AAEO,eAAe;IACpB,OAAO,gIAAA,CAAA,eAAY,CAAC,IAAI,CAAC;QACvB,SAAS;QACT,WAAW,IAAI,OAAO,WAAW;IACnC;AACF"}},
-    {"offset": {"line": 66, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
-}
