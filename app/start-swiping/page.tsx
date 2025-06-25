@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react"
 import Image from "next/image"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, X } from "lucide-react"
-import { Header } from "@/components/navbar"
-import { Footer } from "@/components/footer"
+import { Navbar } from "@/components/navbar"
 
 interface AIProfile {
   uuid: string
@@ -27,20 +28,29 @@ export default function StartSwiping() {
   const [decisions, setDecisions] = useState<SwipeDecision>({})
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [swipeDirection, setSwipeDirection] = useState<string | null>(null)
+
+  const searchParams = useSearchParams()
 
   useEffect(() => {
-    initiateSwipe()
-  }, [])
+    const profilesParam = searchParams.get("profiles")
+    if (profilesParam) {
+      try {
+        const parsedProfiles = JSON.parse(decodeURIComponent(profilesParam)) as AIProfile[]
+        setProfiles(parsedProfiles)
+        setIsLoading(false)
+      } catch (err) {
+        setError("Failed to parse profiles. Please try again.")
+        setIsLoading(false)
+      }
+    } else {
+      initiateSwipe()
+    }
+  }, [searchParams])
 
   async function initiateSwipe() {
     try {
-      const response = await fetch("/api/initiate-swipe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({}),
-      })
+      const response = await fetch("/api/init-swiping")
       if (!response.ok) {
         throw new Error("Failed to initiate swipe session")
       }
@@ -59,11 +69,18 @@ export default function StartSwiping() {
     const currentProfile = profiles[currentIndex]
     setDecisions((prev) => ({ ...prev, [currentProfile.uuid]: decision }))
 
-    if (currentIndex < profiles.length - 1) {
-      setCurrentIndex((prev) => prev + 1)
-    } else {
-      submitDecisions()
-    }
+    // Set swipe animation direction
+    setSwipeDirection(decision === "accepted" ? "right" : "left")
+
+    // Wait for animation to complete before changing index
+    setTimeout(() => {
+      setSwipeDirection(null)
+      if (currentIndex < profiles.length - 1) {
+        setCurrentIndex((prev) => prev + 1)
+      } else {
+        submitDecisions()
+      }
+    }, 300)
   }
 
   const submitDecisions = async () => {
@@ -80,80 +97,129 @@ export default function StartSwiping() {
         throw new Error("Failed to submit decisions")
       }
 
+      // Handle successful submission (e.g., show results or redirect)
       console.log("Decisions submitted successfully")
     } catch (err) {
       setError("Failed to submit decisions. Please try again.")
     }
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-pulse text-teal-400 text-2xl">Loading...</div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-red-500">
+        <p className="mb-4">{error}</p>
+        <Button onClick={() => window.location.reload()} className="bg-teal-500 text-black hover:bg-teal-400">
+          Try Again
+        </Button>
+      </div>
+    )
+  }
+
+  if (profiles.length === 0) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+        <p className="mb-4">No profiles available</p>
+        <Button asChild className="bg-teal-500 text-black hover:bg-teal-400">
+          <Link href="/">Return Home</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  if (currentIndex >= profiles.length) {
+    return (
+      <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white">
+        <h2 className="text-3xl font-bold mb-4">Swiping complete!</h2>
+        <p className="text-gray-300 mb-8">We're analyzing your preferences to create your perfect AI companion.</p>
+        <Button asChild className="bg-teal-500 text-black hover:bg-teal-400">
+          <Link href="/">Return Home</Link>
+        </Button>
+      </div>
+    )
+  }
+
+  const currentProfile = profiles[currentIndex]
+
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <div className="min-h-screen bg-black text-white">
+      <Navbar />
 
-      <main className="flex-grow pt-24">
-        <div className="container mx-auto px-4 py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-center mb-10 text-glow">
-            Discover Your <span className="text-teal-400">AI Companion</span>
-          </h1>
+      <main className="container mx-auto px-6 py-24">
+        <h1 className="text-4xl font-bold text-center mb-12">
+          Find Your <span className="text-teal-400">Perfect Match</span>
+        </h1>
 
-          <div className="flex justify-center">
-            {isLoading ? (
-              <div className="flex items-center justify-center h-[500px]">
-                <div className="animate-pulse text-teal-400">Loading profiles...</div>
+        <div className="flex justify-center">
+          <Card
+            className={`w-full max-w-md bg-gray-900 border border-gray-800 overflow-hidden transition-transform duration-300 ${
+              swipeDirection === "left"
+                ? "translate-x-[-100vw]"
+                : swipeDirection === "right"
+                  ? "translate-x-[100vw]"
+                  : ""
+            }`}
+          >
+            <CardContent className="p-0">
+              <div className="relative aspect-[3/4]">
+                <Image
+                  src={currentProfile.imageUrl || "/placeholder.svg"}
+                  alt={currentProfile.name}
+                  fill
+                  style={{ objectFit: "cover" }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6">
+                  <h2 className="text-3xl font-bold text-white">
+                    {currentProfile.name}, {currentProfile.age}
+                  </h2>
+                  <p className="text-gray-300 mt-2">{currentProfile.bio}</p>
+                </div>
               </div>
-            ) : error ? (
-              <div className="text-red-500 p-8 text-center">{error}</div>
-            ) : profiles.length === 0 ? (
-              <div className="text-gray-400 p-8 text-center">No profiles available</div>
-            ) : currentIndex >= profiles.length ? (
-              <div className="glass-effect rounded-lg p-8 text-center">
-                <h2 className="text-2xl font-bold text-teal-400 mb-4">Discovery Complete!</h2>
-                <p className="text-gray-300 mb-6">You've viewed all available profiles. Check your matches soon!</p>
-                <Button onClick={() => window.location.reload()}>Start Again</Button>
+
+              <div className="flex justify-center space-x-8 p-6">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full p-4 border-red-500 text-red-500 hover:bg-red-500/10 hover:text-red-400"
+                  onClick={() => handleDecision("rejected")}
+                >
+                  <X className="h-8 w-8" />
+                  <span className="sr-only">Reject</span>
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full p-4 border-teal-500 text-teal-500 hover:bg-teal-500/10 hover:text-teal-400"
+                  onClick={() => handleDecision("accepted")}
+                >
+                  <Heart className="h-8 w-8" />
+                  <span className="sr-only">Accept</span>
+                </Button>
               </div>
-            ) : (
-              <Card className="w-full max-w-md bg-dark-200/50 border border-dark-300">
-                <CardContent className="p-6">
-                  <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden">
-                    <Image
-                      src={profiles[currentIndex].imageUrl || "/placeholder.svg"}
-                      alt={profiles[currentIndex].name}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark-100/80 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-4">
-                      <h2 className="text-2xl font-semibold text-white">
-                        {profiles[currentIndex].name}, {profiles[currentIndex].age}
-                      </h2>
-                    </div>
-                  </div>
+            </CardContent>
+          </Card>
+        </div>
 
-                  <p className="text-gray-300 mb-6">{profiles[currentIndex].bio}</p>
-
-                  <div className="flex justify-center space-x-6">
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      className="rounded-full h-16 w-16 p-0"
-                      onClick={() => handleDecision("rejected")}
-                    >
-                      <X className="h-8 w-8" />
-                      <span className="sr-only">Reject</span>
-                    </Button>
-                    <Button size="lg" className="rounded-full h-16 w-16 p-0" onClick={() => handleDecision("accepted")}>
-                      <Heart className="h-8 w-8" />
-                      <span className="sr-only">Accept</span>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+        <div className="mt-8 text-center text-gray-400">
+          <p>
+            Profile {currentIndex + 1} of {profiles.length}
+          </p>
         </div>
       </main>
 
-      <Footer />
+      <footer className="bg-gray-950 border-t border-gray-800 mt-auto">
+        <div className="container mx-auto px-6 py-8">
+          <div className="text-center text-gray-400">© 2024 Galatea.AI. All rights reserved.</div>
+        </div>
+      </footer>
     </div>
   )
 }

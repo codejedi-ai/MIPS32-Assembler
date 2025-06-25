@@ -20,6 +20,7 @@ const config = {
     },
     extend: {
       colors: {
+        // Colors from the first configuration
         teal: {
           50: "#e6fcff",
           100: "#c2f9ff",
@@ -40,12 +41,19 @@ const config = {
           700: "#2a2f3a",
         },
         black: "#050507",
+
+        // Colors from the second configuration (Galatea specific)
         galatea: {
-          black: "#050507",
-          dark: "#0a0f14",
-          teal: "#00c4f0",
-          light: "#e0e0e0",
+          dark: "#0A0E17",
+          darker: "#050A14",
+          cyan: "#00E5FF",
+          "cyan-light": "#4AEAFF",
+          "cyan-dark": "#00B8CC",
+          gray: "#2A3142",
+          "gray-light": "#3D4663",
         },
+
+        // Standard HSL colors (present in both, combined once)
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -86,6 +94,7 @@ const config = {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        // Keyframes from both configurations
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },
@@ -94,10 +103,26 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        pulse: { // From second configuration
+          "0%, 100%": { opacity: "1" },
+          "50%": { opacity: "0.5" },
+        },
+        glow: { // From second configuration
+          "0%, 100%": { boxShadow: "0 0 10px rgba(0, 229, 255, 0.5)" },
+          "50%": { boxShadow: "0 0 20px rgba(0, 229, 255, 0.8), 0 0 30px rgba(0, 229, 255, 0.6)" },
+        },
       },
       animation: {
+        // Animations from both configurations
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite", // From second configuration
+        glow: "glow 2s ease-in-out infinite", // From second configuration
+      },
+      backgroundImage: { // From second configuration
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        "galatea-gradient": "linear-gradient(to right, #00E5FF, #4AEAFF)",
       },
     },
   },
