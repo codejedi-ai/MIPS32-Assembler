@@ -1,9 +1,11 @@
 "use client"
 
-import React, { useState, useEffect } from "react"
+import type React from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Select } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import Cookies from "js-cookie"
 
@@ -37,6 +39,14 @@ export function ProfileSetupForm() {
     console.log("Profile saved:", formData)
     setIsSubmitted(true)
   }
+
+  const genderOptions = [
+    { value: "", label: "Select gender" },
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "non-binary", label: "Non-binary" },
+    { value: "other", label: "Other" },
+  ]
 
   if (isSubmitted) {
     return (
@@ -83,19 +93,14 @@ export function ProfileSetupForm() {
         <Label htmlFor="gender" className="text-gray-200">
           Gender
         </Label>
-        <select
+        <Select
           id="gender"
           name="gender"
           value={formData.gender}
           onChange={handleChange}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 bg-dark-300 border-dark-400 focus:border-teal-500"
-        >
-          <option value="">Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-          <option value="non-binary">Non-binary</option>
-          <option value="other">Other</option>
-        </select>
+          options={genderOptions}
+          className="bg-dark-300 border-dark-400 focus:border-teal-500"
+        />
       </div>
 
       <div className="space-y-2">

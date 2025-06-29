@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Heart, X, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -28,10 +29,12 @@ export function SwipeCard({ profile, onSwipe }: SwipeCardProps) {
         {/* Front of card (image) */}
         <Card className={`swipe-card absolute inset-0 backface-hidden ${isFlipped ? "rotate-y-180" : ""}`}>
           <div className="relative w-full h-full">
-            <img
+            <Image
               src={profile.imageUrl || "/placeholder.svg"}
               alt={profile.name}
-              className="w-full h-full object-cover rounded-xl"
+              fill
+              className="object-cover rounded-xl"
+              priority
             />
             <div className="swipe-card-gradient"></div>
 

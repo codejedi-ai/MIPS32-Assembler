@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Image from "next/image"
 
 export function LoadingScreen({ message = "Sculpting your experience..." }: { message?: string }) {
   const [progress, setProgress] = useState(0)
@@ -33,12 +34,13 @@ export function LoadingScreen({ message = "Sculpting your experience..." }: { me
 
 export function GlowingGalateaAILogo() {
   return (
-    <img
+    <Image
       src="/galatea-ai-logo.png"
       alt="Galatea AI Logo"
       width={100}
       height={100}
       className="mb-8 animate-pulse filter brightness-0 invert"
+      priority
     />
   )
 }

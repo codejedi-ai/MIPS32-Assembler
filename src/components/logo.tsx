@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom"
+import Image from "next/image"
+import Link from "next/link"
 
 interface LogoProps {
   size?: "small" | "medium" | "large"
@@ -16,9 +17,9 @@ export function Logo({ size = "medium", showText = true, className = "" }: LogoP
   const dimension = sizes[size]
 
   return (
-    <Link to="/" className={`flex items-center space-x-2 ${className}`}>
+    <Link href="/" className={`flex items-center space-x-2 ${className}`}>
       <div className="relative">
-        <img src="/favicon-white.png" alt="Galatea.AI Logo" width={dimension} height={dimension} />
+        <Image src="/favicon-white.png" alt="Galatea.AI Logo" width={dimension} height={dimension} />
       </div>
       {showText && (
         <span
