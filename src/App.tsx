@@ -1,27 +1,22 @@
 import { Routes, Route } from 'react-router-dom'
-import HomePage from './pages/HomePage'
-import SignInPage from './pages/SignInPage'
-import SignUpPage from './pages/SignUpPage'
-import LoadingPage from './pages/LoadingPage'
-import ProfileSetupPage from './pages/ProfileSetupPage'
-import StartSwipingPage from './pages/StartSwipingPage'
-import DashboardPage from './pages/DashboardPage'
-import DiscoverPage from './pages/DiscoverPage'
-import MessagesPage from './pages/MessagesPage'
+import { HomePage } from './pages/HomePage'
+import { ProductPage } from './pages/ProductPage'
+import { TechnologyPage } from './pages/TechnologyPage'
+import { AboutPage } from './pages/AboutPage'
+import { ContactPage } from './pages/ContactPage'
+import './index.css'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/signin" element={<SignInPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/loading" element={<LoadingPage />} />
-      <Route path="/profile-setup" element={<ProfileSetupPage />} />
-      <Route path="/start-swiping" element={<StartSwipingPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/dashboard/discover" element={<DiscoverPage />} />
-      <Route path="/dashboard/messages" element={<MessagesPage />} />
-    </Routes>
+    <div className="min-h-screen bg-white">
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/technology" element={<TechnologyPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+      </Routes>
+    </div>
   )
 }
 

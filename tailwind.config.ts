@@ -20,38 +20,6 @@ const config = {
     },
     extend: {
       colors: {
-        teal: {
-          50: "#e6fcff",
-          100: "#c2f9ff",
-          200: "#8ff2ff",
-          300: "#4ee6ff",
-          400: "#1cd8ff",
-          500: "#00c4f0",
-          600: "#009bc2",
-          700: "#007a9e",
-          800: "#006380",
-          900: "#00526a",
-          950: "#003544",
-        },
-        gray: {
-          950: "#0a0c10",
-          900: "#111318",
-          800: "#1a1d24",
-          700: "#2a2f3a",
-        },
-        black: "#050507",
-        galatea: {
-          black: "#050507",
-          dark: "#0a0f14",
-          teal: "#00c4f0",
-          light: "#e0e0e0",
-        },
-        dark: {
-          100: "#0a0c10",
-          200: "#111318",
-          300: "#1a1d24",
-          400: "#2a2f3a",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -85,6 +53,18 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        silver: {
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -104,6 +84,9 @@ const config = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        'sans': ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },
