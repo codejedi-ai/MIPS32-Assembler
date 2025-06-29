@@ -15,9 +15,9 @@ export function AnimatedText({
   delay = 0 
 }: AnimatedTextProps) {
   const variants = {
-    gradient: 'bg-gradient-to-r from-cyan-400 via-teal-300 to-emerald-400 bg-clip-text text-transparent animate-gradient-x',
-    glow: 'text-white drop-shadow-[0_0_20px_rgba(34,211,238,0.8)] animate-teal-glow',
-    typewriter: 'text-white overflow-hidden border-r-2 border-cyan-400 animate-typewriter',
+    gradient: 'bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-gradient-x',
+    glow: 'text-white drop-shadow-[0_0_10px_rgba(0,196,240,0.8)] animate-pulse',
+    typewriter: 'text-white overflow-hidden border-r-2 border-teal-400 animate-typewriter',
     fade: 'text-white animate-fade-in'
   }
 

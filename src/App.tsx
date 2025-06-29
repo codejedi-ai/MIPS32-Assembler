@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { AnimatedBackground } from './components/animated-background'
 import { Navbar } from './components/navbar'
 import { HomePage } from './pages/HomePage'
@@ -11,18 +11,20 @@ import './index.css'
 
 function App() {
   return (
-    <div className="min-h-screen bg-black text-white relative">
-      <AnimatedBackground />
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/signin" element={<SignInPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/dashboard/discover" element={<DiscoverPage />} />
-        <Route path="/dashboard/messages" element={<MessagesPage />} />
-      </Routes>
-    </div>
+    <Router>
+      <div className="min-h-screen bg-black text-white relative">
+        <AnimatedBackground />
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/signin" element={<SignInPage />} />
+          <Route path="/signup" element={<SignUpPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/dashboard/discover" element={<DiscoverPage />} />
+          <Route path="/dashboard/messages" element={<MessagesPage />} />
+        </Routes>
+      </div>
+    </Router>
   )
 }
 

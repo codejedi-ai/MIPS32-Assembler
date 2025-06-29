@@ -8,14 +8,14 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-gradient-to-r from-cyan-500 to-teal-500 text-white hover:from-cyan-400 hover:to-teal-400 shadow-lg hover:shadow-xl hover:shadow-cyan-500/25 transform hover:scale-105 active:scale-95",
+        default: "bg-gradient-to-r from-teal-500 to-cyan-500 text-black hover:from-teal-400 hover:to-cyan-400 shadow-lg hover:shadow-xl hover:shadow-teal-500/25 transform hover:scale-105 active:scale-95",
         destructive: "bg-gradient-to-r from-red-500 to-pink-500 text-white hover:from-red-400 hover:to-pink-400 shadow-lg hover:shadow-xl hover:shadow-red-500/25 transform hover:scale-105 active:scale-95",
-        outline: "border-2 border-cyan-500/30 bg-transparent text-cyan-400 hover:bg-cyan-500/10 hover:border-cyan-400 backdrop-blur-sm shadow-lg hover:shadow-xl hover:shadow-cyan-500/20 transform hover:scale-105 active:scale-95",
-        secondary: "bg-slate-800/50 text-slate-200 hover:bg-slate-700/50 backdrop-blur-sm border border-slate-700/50 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95",
-        ghost: "text-slate-300 hover:bg-white/10 hover:text-white backdrop-blur-sm transform hover:scale-105 active:scale-95",
-        link: "text-cyan-400 underline-offset-4 hover:underline hover:text-cyan-300 transform hover:scale-105 active:scale-95",
-        glow: "bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 text-white shadow-2xl hover:shadow-cyan-500/50 transform hover:scale-110 active:scale-95 animate-pulse-glow",
-        glass: "bg-white/10 backdrop-blur-md border border-cyan-400/20 text-white hover:bg-white/20 hover:border-cyan-400/40 shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95",
+        outline: "border-2 border-teal-500/30 bg-transparent text-teal-400 hover:bg-teal-500/10 hover:border-teal-400 backdrop-blur-sm shadow-lg hover:shadow-xl hover:shadow-teal-500/20 transform hover:scale-105 active:scale-95",
+        secondary: "bg-gray-800/50 text-gray-200 hover:bg-gray-700/50 backdrop-blur-sm border border-gray-700/50 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95",
+        ghost: "text-gray-300 hover:bg-white/10 hover:text-white backdrop-blur-sm transform hover:scale-105 active:scale-95",
+        link: "text-teal-400 underline-offset-4 hover:underline hover:text-teal-300 transform hover:scale-105 active:scale-95",
+        glow: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white shadow-2xl hover:shadow-purple-500/50 transform hover:scale-110 active:scale-95 animate-pulse",
+        glass: "bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95",
       },
       size: {
         default: "h-12 px-6 py-3",
