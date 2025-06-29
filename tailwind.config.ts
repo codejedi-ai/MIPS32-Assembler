@@ -20,37 +20,65 @@ const config = {
     },
     extend: {
       colors: {
+        // Teal/Cyan theme based on the image
         teal: {
-          50: "#e6fcff",
-          100: "#c2f9ff",
-          200: "#8ff2ff",
-          300: "#4ee6ff",
-          400: "#1cd8ff",
-          500: "#00c4f0",
-          600: "#009bc2",
-          700: "#007a9e",
-          800: "#006380",
-          900: "#00526a",
-          950: "#003544",
+          50: "#ecfeff",
+          100: "#cffafe",
+          200: "#a5f3fc",
+          300: "#67e8f9",
+          400: "#22d3ee",
+          500: "#06b6d4",
+          600: "#0891b2",
+          700: "#0e7490",
+          800: "#155e75",
+          900: "#164e63",
+          950: "#083344",
         },
+        cyan: {
+          50: "#ecfeff",
+          100: "#cffafe",
+          200: "#a5f3fc",
+          300: "#67e8f9",
+          400: "#22d3ee",
+          500: "#06b6d4",
+          600: "#0891b2",
+          700: "#0e7490",
+          800: "#155e75",
+          900: "#164e63",
+          950: "#083344",
+        },
+        slate: {
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+          950: "#020617",
+        },
+        // Keep existing colors for compatibility
         gray: {
-          950: "#0a0c10",
-          900: "#111318",
-          800: "#1a1d24",
-          700: "#2a2f3a",
+          950: "#020617",
+          900: "#0f172a",
+          800: "#1e293b",
+          700: "#334155",
         },
-        black: "#050507",
+        black: "#020617",
         galatea: {
-          black: "#050507",
-          dark: "#0a0f14",
-          teal: "#00c4f0",
-          light: "#e0e0e0",
+          black: "#020617",
+          dark: "#0f172a",
+          teal: "#22d3ee",
+          light: "#f1f5f9",
         },
         dark: {
-          100: "#0a0c10",
-          200: "#111318",
-          300: "#1a1d24",
-          400: "#2a2f3a",
+          100: "#020617",
+          200: "#0f172a",
+          300: "#1e293b",
+          400: "#334155",
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -100,10 +128,55 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "teal-glow": {
+          "0%, 100%": {
+            textShadow: "0 0 10px rgba(34, 211, 238, 0.8), 0 0 20px rgba(34, 211, 238, 0.6), 0 0 30px rgba(34, 211, 238, 0.4)",
+          },
+          "50%": {
+            textShadow: "0 0 20px rgba(34, 211, 238, 1), 0 0 30px rgba(34, 211, 238, 0.8), 0 0 40px rgba(34, 211, 238, 0.6)",
+          },
+        },
+        "float": {
+          "0%, 100%": { 
+            transform: "translateY(0px) rotate(0deg)",
+            opacity: "0.6"
+          },
+          "50%": { 
+            transform: "translateY(-20px) rotate(180deg)",
+            opacity: "1"
+          },
+        },
+        "gradient-x": {
+          "0%, 100%": {
+            backgroundSize: "200% 200%",
+            backgroundPosition: "left center",
+          },
+          "50%": {
+            backgroundSize: "200% 200%",
+            backgroundPosition: "right center",
+          },
+        },
+        "fade-in": {
+          from: { 
+            opacity: "0",
+            transform: "translateY(30px)"
+          },
+          to: { 
+            opacity: "1",
+            transform: "translateY(0)"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "teal-glow": "teal-glow 2s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
+        "gradient-x": "gradient-x 3s ease infinite",
+        "fade-in": "fade-in 0.8s ease-out forwards",
+      },
+      backgroundImage: {
+        'hero-gradient': 'linear-gradient(135deg, rgba(34, 211, 238, 0.1) 0%, rgba(8, 145, 178, 0.1) 50%, rgba(13, 148, 136, 0.1) 100%)',
       },
     },
   },

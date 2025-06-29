@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
 import { AnimatedText } from "@/components/ui/animated-text"
 import { MorphingButton } from "@/components/ui/morphing-button"
-import { Menu, X, Sparkles } from "lucide-react"
+import { Menu, X, Sparkles, LogIn } from "lucide-react"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -25,7 +25,7 @@ export function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled 
-          ? "bg-black/80 backdrop-blur-xl border-b border-teal-500/30 shadow-2xl shadow-teal-500/10" 
+          ? "bg-slate-900/90 backdrop-blur-xl border-b border-cyan-500/30 shadow-2xl shadow-cyan-500/10" 
           : "bg-transparent backdrop-blur-sm"
       }`}
     >
@@ -34,17 +34,17 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-8">
-          <Link to="/about" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
+          <Link to="/about" className="text-slate-300 hover:text-cyan-400 transition-all duration-300 hover:scale-110 relative group">
             About
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-teal-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
-          <Link to="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
-            Profile
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
+          <Link to="/discover" className="text-slate-300 hover:text-cyan-400 transition-all duration-300 hover:scale-110 relative group">
+            Discover
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-teal-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
-          <Link to="/companions" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
-            Companions
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
+          <Link to="/features" className="text-slate-300 hover:text-cyan-400 transition-all duration-300 hover:scale-110 relative group">
+            Features
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-400 to-teal-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
         </div>
 
@@ -53,12 +53,13 @@ export function Navbar() {
             variant="glass"
             morphTo={
               <span className="flex items-center gap-2">
-                <Sparkles size={16} />
+                <LogIn size={16} />
                 Sign In
               </span>
             }
           >
             <Link to="/signin" className="flex items-center gap-2">
+              <LogIn size={16} />
               Log In
             </Link>
           </MorphingButton>
@@ -73,6 +74,7 @@ export function Navbar() {
             }
           >
             <Link to="/signup" className="flex items-center gap-2">
+              <Sparkles size={16} />
               Sign Up
             </Link>
           </MorphingButton>
@@ -91,28 +93,28 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-teal-500/30 animate-fade-in">
+        <div className="md:hidden bg-slate-900/95 backdrop-blur-xl border-t border-cyan-500/30 animate-fade-in">
           <div className="container mx-auto px-6 py-6 flex flex-col space-y-6">
             <Link
               to="/about"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              className="text-slate-300 hover:text-cyan-400 transition-all duration-300 py-3 border-b border-slate-800/50 hover:border-cyan-500/30"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <AnimatedText variant="fade">About</AnimatedText>
             </Link>
             <Link
-              to="/profile-setup"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              to="/discover"
+              className="text-slate-300 hover:text-cyan-400 transition-all duration-300 py-3 border-b border-slate-800/50 hover:border-cyan-500/30"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <AnimatedText variant="fade" delay={100}>Profile</AnimatedText>
+              <AnimatedText variant="fade" delay={100}>Discover</AnimatedText>
             </Link>
             <Link
-              to="/companions"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              to="/features"
+              className="text-slate-300 hover:text-cyan-400 transition-all duration-300 py-3 border-b border-slate-800/50 hover:border-cyan-500/30"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <AnimatedText variant="fade" delay={200}>Companions</AnimatedText>
+              <AnimatedText variant="fade" delay={200}>Features</AnimatedText>
             </Link>
             
             <div className="flex flex-col space-y-4 pt-4">

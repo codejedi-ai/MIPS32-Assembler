@@ -15,10 +15,10 @@ export function FloatingCard({
   ...props 
 }: FloatingCardProps) {
   const variants = {
-    default: 'bg-gray-900/80 border border-gray-700/50 backdrop-blur-sm',
-    glow: 'bg-gray-900/80 border border-teal-500/50 shadow-2xl shadow-teal-500/20',
-    neon: 'bg-black/80 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)]',
-    glass: 'bg-white/10 backdrop-blur-md border border-white/20 shadow-xl'
+    default: 'bg-slate-900/80 border border-slate-700/50 backdrop-blur-sm',
+    glow: 'bg-slate-900/80 border border-cyan-500/50 shadow-2xl shadow-cyan-500/20',
+    neon: 'bg-slate-900/80 border-2 border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.5)]',
+    glass: 'bg-white/10 backdrop-blur-md border border-cyan-400/20 shadow-xl'
   }
 
   return (
