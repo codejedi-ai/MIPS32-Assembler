@@ -4,9 +4,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
-import { AnimatedText } from "@/components/ui/animated-text"
-import { MorphingButton } from "@/components/ui/morphing-button"
-import { Menu, X, Sparkles } from "lucide-react"
+import { Menu, X } from "lucide-react"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -23,105 +21,73 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled 
-          ? "bg-black/80 backdrop-blur-xl border-b border-teal-500/30 shadow-2xl shadow-teal-500/10" 
-          : "bg-transparent backdrop-blur-sm"
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled ? "bg-black/60 backdrop-blur-md border-b border-teal-500/20" : "bg-transparent backdrop-blur-sm"
       }`}
     >
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <Logo />
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-8">
-          <Link to="/about" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
+        <div className="hidden md:flex space-x-6">
+          <Link to="/about" className="text-gray-300 hover:text-teal-400 transition-colors">
             About
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
-          <Link to="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
+          <Link to="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-colors">
             Profile
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
-          <Link to="/companions" className="text-gray-300 hover:text-teal-400 transition-all duration-300 hover:scale-110 relative group">
+          <Link to="/companions" className="text-gray-300 hover:text-teal-400 transition-colors">
             Companions
-            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-teal-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
           </Link>
         </div>
 
-        <div className="hidden md:flex space-x-3">
-          <MorphingButton
-            variant="glass"
-            morphTo={
-              <span className="flex items-center gap-2">
-                <Sparkles size={16} />
-                Sign In
-              </span>
-            }
-          >
-            <Link to="/signin" className="flex items-center gap-2">
-              Log In
-            </Link>
-          </MorphingButton>
-          
-          <MorphingButton
-            variant="glow"
-            morphTo={
-              <span className="flex items-center gap-2">
-                <Sparkles size={16} />
-                Get Started
-              </span>
-            }
-          >
-            <Link to="/signup" className="flex items-center gap-2">
-              Sign Up
-            </Link>
-          </MorphingButton>
+        <div className="hidden md:flex space-x-2">
+          <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
+            <Link to="/signin">Log In</Link>
+          </Button>
+          <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+            <Link to="/signup">Sign Up</Link>
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
-        <MorphingButton
-          variant="glass"
-          className="md:hidden w-12 h-12 rounded-full p-0"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          morphTo={isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        >
+        <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </MorphingButton>
+        </button>
       </nav>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-black/95 backdrop-blur-xl border-t border-teal-500/30 animate-fade-in">
-          <div className="container mx-auto px-6 py-6 flex flex-col space-y-6">
+        <div className="md:hidden bg-black/90 backdrop-blur-md">
+          <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             <Link
               to="/about"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <AnimatedText variant="fade">About</AnimatedText>
+              About
             </Link>
             <Link
               to="/profile-setup"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <AnimatedText variant="fade" delay={100}>Profile</AnimatedText>
+              Profile
             </Link>
             <Link
               to="/companions"
-              className="text-gray-300 hover:text-teal-400 transition-all duration-300 py-3 border-b border-gray-800/50 hover:border-teal-500/30"
+              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <AnimatedText variant="fade" delay={200}>Companions</AnimatedText>
+              Companions
             </Link>
-            
-            <div className="flex flex-col space-y-4 pt-4">
-              <MorphingButton variant="glass" className="justify-center">
-                <Link to="/signin" className="w-full text-center">Log In</Link>
-              </MorphingButton>
-              <MorphingButton variant="glow" className="justify-center">
-                <Link to="/signup" className="w-full text-center">Sign Up</Link>
-              </MorphingButton>
+            <div className="flex flex-col space-y-2 pt-2">
+              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start" asChild>
+                <Link to="/signin">Log In</Link>
+              </Button>
+              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
+                <Link to="/signup">Sign Up</Link>
+              </Button>
             </div>
           </div>
         </div>
