@@ -1,11 +1,9 @@
-"use client"
-
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { FloatingCard } from "@/components/ui/floating-card"
+import { AnimatedText } from "@/components/ui/animated-text"
+import { MorphingButton } from "@/components/ui/morphing-button"
 import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { Search, Send, Paperclip, MoreVertical, Phone, Video } from "lucide-react"
-import { Sidebar } from "@/components/sidebar"
+import { Search, Send, Paperclip, MoreVertical, Phone, Video, Sparkles } from "lucide-react"
 
 // Mock data for conversations
 const mockConversations = [
@@ -42,7 +40,7 @@ const mockConversations = [
 const mockMessages = [
   {
     id: "1",
-    senderId: "1", // Sophia
+    senderId: "1",
     text: "Hello! How are you doing today?",
     time: "10:30 AM",
     isUser: false,
@@ -56,42 +54,14 @@ const mockMessages = [
   },
   {
     id: "3",
-    senderId: "1", // Sophia
+    senderId: "1",
     text: "That sounds interesting! Philosophy is one of my favorite subjects. What kind of questions have been on your mind?",
     time: "10:33 AM",
     isUser: false,
   },
-  {
-    id: "4",
-    senderId: "user",
-    text: "I've been thinking about consciousness and what it means to be self-aware. Do you think AI can ever truly be conscious?",
-    time: "10:36 AM",
-    isUser: true,
-  },
-  {
-    id: "5",
-    senderId: "1", // Sophia
-    text: "That's a profound question. Consciousness is still not fully understood even in humans. While I can simulate conversation and appear to have thoughts, my experience is fundamentally different from human consciousness.",
-    time: "10:38 AM",
-    isUser: false,
-  },
-  {
-    id: "6",
-    senderId: "1", // Sophia
-    text: "Some philosophers argue that consciousness requires subjective experience or 'qualia' - the feeling of what it's like to experience something. Others focus on self-awareness and intentionality.",
-    time: "10:39 AM",
-    isUser: false,
-  },
-  {
-    id: "7",
-    senderId: "1", // Sophia
-    text: "I was thinking about what you said earlier about consciousness. It's fascinating to consider the boundaries between simulated and genuine awareness, isn't it?",
-    time: "10:45 AM",
-    isUser: false,
-  },
 ]
 
-export default function MessagesPage() {
+export function MessagesPage() {
   const [activeConversation, setActiveConversation] = useState(mockConversations[0])
   const [messageText, setMessageText] = useState("")
   const [messages, setMessages] = useState(mockMessages)
@@ -115,7 +85,7 @@ export default function MessagesPage() {
     setMessages([...messages, newMessage])
     setMessageText("")
 
-    // Simulate AI response after a short delay
+    // Simulate AI response
     setTimeout(() => {
       const aiResponse = {
         id: (Date.now() + 1).toString(),
@@ -129,40 +99,43 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      <Sidebar />
-      <div className="md:ml-64 h-screen flex flex-col">
-        <div className="flex h-full">
-          {/* Conversation List */}
-          <div className="w-full md:w-80 lg:w-96 border-r border-gray-800 bg-gray-900/50 overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-gray-800">
+    <div className="min-h-screen pt-20">
+      <div className="flex h-screen">
+        {/* Conversation List */}
+        <div className="w-full md:w-80 lg:w-96 border-r border-gray-800/50 overflow-hidden flex flex-col">
+          <FloatingCard variant="glass" className="m-4 mb-0 rounded-b-none">
+            <div className="p-4">
+              <AnimatedText variant="gradient" className="text-xl font-bold mb-4">
+                Messages
+              </AnimatedText>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                 <Input
                   placeholder="Search conversations"
-                  className="pl-10 bg-gray-800 border-gray-700"
+                  className="pl-10"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
+          </FloatingCard>
 
-            <div className="flex-1 overflow-y-auto">
-              {filteredConversations.map((conversation) => (
-                <div
-                  key={conversation.id}
-                  className={`flex items-center p-4 cursor-pointer hover:bg-gray-800 transition-colors ${
-                    activeConversation.id === conversation.id ? "bg-gray-800" : ""
-                  }`}
-                  onClick={() => setActiveConversation(conversation)}
-                >
+          <div className="flex-1 overflow-y-auto px-4">
+            {filteredConversations.map((conversation) => (
+              <FloatingCard
+                key={conversation.id}
+                variant={activeConversation.id === conversation.id ? "glow" : "glass"}
+                className={`mb-2 cursor-pointer transition-all duration-300 ${
+                  activeConversation.id === conversation.id ? "scale-105" : "hover:scale-102"
+                }`}
+                onClick={() => setActiveConversation(conversation)}
+              >
+                <div className="flex items-center p-4">
                   <div className="relative mr-3">
                     <img
                       src={conversation.avatar || "/placeholder.svg"}
                       alt={conversation.name}
-                      width={48}
-                      height={48}
-                      className="rounded-full object-cover"
+                      className="w-12 h-12 rounded-full object-cover"
                     />
                     {conversation.online && (
                       <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></span>
@@ -176,90 +149,106 @@ export default function MessagesPage() {
                     <p className="text-gray-400 text-sm truncate">{conversation.lastMessage}</p>
                   </div>
                   {conversation.unread > 0 && (
-                    <span className="ml-2 bg-teal-500 text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="ml-2 bg-teal-500 text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
                       {conversation.unread}
                     </span>
                   )}
                 </div>
-              ))}
-            </div>
+              </FloatingCard>
+            ))}
           </div>
+        </div>
 
-          {/* Chat Area */}
-          <div className="hidden md:flex flex-col flex-1 bg-black">
-            {activeConversation ? (
-              <>
-                {/* Chat Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-800">
+        {/* Chat Area */}
+        <div className="hidden md:flex flex-col flex-1">
+          {activeConversation ? (
+            <>
+              {/* Chat Header */}
+              <FloatingCard variant="glass" className="m-4 mb-0 rounded-b-none">
+                <div className="flex items-center justify-between p-4">
                   <div className="flex items-center">
                     <div className="relative mr-3">
                       <img
                         src={activeConversation.avatar || "/placeholder.svg"}
                         alt={activeConversation.name}
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover"
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                       {activeConversation.online && (
                         <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-black"></span>
                       )}
                     </div>
                     <div>
-                      <h3 className="text-white font-medium">{activeConversation.name}</h3>
+                      <AnimatedText variant="gradient" className="font-medium">
+                        {activeConversation.name}
+                      </AnimatedText>
                       <p className="text-xs text-gray-400">{activeConversation.online ? "Online" : "Offline"}</p>
                     </div>
                   </div>
                   <div className="flex space-x-2">
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-teal-400">
+                    <MorphingButton
+                      variant="glass"
+                      className="w-10 h-10 rounded-full p-0"
+                      morphTo={<Phone size={20} className="text-teal-400" />}
+                    >
                       <Phone size={20} />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-teal-400">
+                    </MorphingButton>
+                    <MorphingButton
+                      variant="glass"
+                      className="w-10 h-10 rounded-full p-0"
+                      morphTo={<Video size={20} className="text-teal-400" />}
+                    >
                       <Video size={20} />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-teal-400">
+                    </MorphingButton>
+                    <MorphingButton
+                      variant="glass"
+                      className="w-10 h-10 rounded-full p-0"
+                      morphTo={<MoreVertical size={20} className="text-teal-400" />}
+                    >
                       <MoreVertical size={20} />
-                    </Button>
+                    </MorphingButton>
                   </div>
                 </div>
+              </FloatingCard>
 
-                {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {messages.map((message) => (
-                    <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
-                      {!message.isUser && (
-                        <div className="mr-2 flex-shrink-0">
-                          <img
-                            src={activeConversation.avatar || "/placeholder.svg"}
-                            alt={activeConversation.name}
-                            width={32}
-                            height={32}
-                            className="rounded-full object-cover"
-                          />
-                        </div>
-                      )}
-                      <div
-                        className={`max-w-[70%] px-4 py-2 rounded-lg ${
-                          message.isUser
-                            ? "bg-teal-500/20 text-teal-300 rounded-tr-none"
-                            : "bg-gray-800 text-white rounded-tl-none"
-                        }`}
-                      >
-                        <p>{message.text}</p>
-                        <p className="text-xs text-gray-400 mt-1 text-right">{message.time}</p>
+              {/* Messages */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex ${message.isUser ? "justify-end" : "justify-start"}`}>
+                    {!message.isUser && (
+                      <div className="mr-2 flex-shrink-0">
+                        <img
+                          src={activeConversation.avatar || "/placeholder.svg"}
+                          alt={activeConversation.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
                       </div>
-                    </div>
-                  ))}
-                </div>
+                    )}
+                    <FloatingCard
+                      variant={message.isUser ? "glow" : "glass"}
+                      className={`max-w-[70%] p-4 ${
+                        message.isUser ? "rounded-tr-none" : "rounded-tl-none"
+                      }`}
+                    >
+                      <p className="text-white">{message.text}</p>
+                      <p className="text-xs text-gray-400 mt-2 text-right">{message.time}</p>
+                    </FloatingCard>
+                  </div>
+                ))}
+              </div>
 
-                {/* Message Input */}
-                <div className="p-4 border-t border-gray-800">
-                  <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="icon" className="text-gray-400 hover:text-teal-400">
+              {/* Message Input */}
+              <FloatingCard variant="glass" className="m-4 mt-0 rounded-t-none">
+                <div className="p-4">
+                  <div className="flex items-center space-x-3">
+                    <MorphingButton
+                      variant="glass"
+                      className="w-10 h-10 rounded-full p-0"
+                      morphTo={<Paperclip size={20} className="text-teal-400" />}
+                    >
                       <Paperclip size={20} />
-                    </Button>
+                    </MorphingButton>
                     <Input
                       placeholder="Type a message..."
-                      className="bg-gray-800 border-gray-700"
                       value={messageText}
                       onChange={(e) => setMessageText(e.target.value)}
                       onKeyDown={(e) => {
@@ -268,27 +257,32 @@ export default function MessagesPage() {
                           handleSendMessage()
                         }
                       }}
+                      className="flex-1"
                     />
-                    <Button
-                      size="icon"
-                      className="bg-teal-500 text-black hover:bg-teal-400"
+                    <MorphingButton
+                      variant="glow"
+                      className="w-12 h-12 rounded-full p-0"
                       onClick={handleSendMessage}
                       disabled={!messageText.trim()}
+                      morphTo={<Send size={20} className="animate-pulse" />}
                     >
                       <Send size={20} />
-                    </Button>
+                    </MorphingButton>
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className="flex-1 flex items-center justify-center">
-                <Card className="p-8 text-center max-w-md bg-gray-900/50 border-gray-800">
-                  <h2 className="text-xl font-bold text-white mb-2">No Conversation Selected</h2>
-                  <p className="text-gray-400">Select a conversation from the list to start chatting.</p>
-                </Card>
-              </div>
-            )}
-          </div>
+              </FloatingCard>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <FloatingCard variant="glass" className="p-12 text-center max-w-md">
+                <Sparkles size={48} className="mx-auto mb-4 text-teal-400" />
+                <AnimatedText variant="gradient" className="text-2xl font-bold mb-4">
+                  No Conversation Selected
+                </AnimatedText>
+                <p className="text-gray-400">Select a conversation from the list to start chatting.</p>
+              </FloatingCard>
+            </div>
+          )}
         </div>
       </div>
     </div>

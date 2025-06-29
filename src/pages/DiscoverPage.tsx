@@ -1,10 +1,9 @@
-"use client"
-
 import { useState } from "react"
 import { SwipeCard } from "@/components/swipe-card"
-import { Button } from "@/components/ui/button"
-import { Filter, RefreshCw } from "lucide-react"
-import { Sidebar } from "@/components/sidebar"
+import { FloatingCard } from "@/components/ui/floating-card"
+import { AnimatedText } from "@/components/ui/animated-text"
+import { MorphingButton } from "@/components/ui/morphing-button"
+import { Filter, RefreshCw, Sparkles } from "lucide-react"
 
 // Mock data for AI profiles
 const mockProfiles = [
@@ -34,7 +33,7 @@ const mockProfiles = [
   },
 ]
 
-export default function DiscoverPage() {
+export function DiscoverPage() {
   const [profiles, setProfiles] = useState(mockProfiles)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [swipedProfiles, setSwipedProfiles] = useState<Record<string, "left" | "right">>({})
@@ -50,7 +49,6 @@ export default function DiscoverPage() {
 
   const resetProfiles = () => {
     setIsLoading(true)
-    // Simulate API call
     setTimeout(() => {
       setProfiles(mockProfiles)
       setCurrentIndex(0)
@@ -61,43 +59,87 @@ export default function DiscoverPage() {
 
   const currentProfile = profiles[currentIndex]
   const hasMoreProfiles = currentIndex < profiles.length
-  const hasSwipedAll = Object.keys(swipedProfiles).length === profiles.length
 
   return (
-    <div className="min-h-screen bg-black">
-      <Sidebar />
-      <div className="md:ml-64 min-h-screen transition-all duration-300">
-        <div className="p-6 md:p-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Discover Companions</h1>
-              <p className="text-gray-400">Find your perfect AI match by swiping through profiles.</p>
-            </div>
-            <div className="mt-4 md:mt-0 flex space-x-3">
-              <Button variant="outline">
-                <Filter size={18} className="mr-2" />
+    <div className="min-h-screen pt-24 px-6">
+      <div className="container mx-auto">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+          <div>
+            <AnimatedText variant="gradient" className="text-4xl font-bold mb-4">
+              Discover Companions
+            </AnimatedText>
+            <p className="text-gray-400 text-lg">Find your perfect AI match by swiping through profiles.</p>
+          </div>
+          <div className="mt-4 md:mt-0 flex space-x-3">
+            <MorphingButton
+              variant="glass"
+              morphTo={
+                <span className="flex items-center gap-2">
+                  <Sparkles size={18} />
+                  Filters
+                </span>
+              }
+            >
+              <span className="flex items-center gap-2">
+                <Filter size={18} />
                 Filters
-              </Button>
-              <Button onClick={resetProfiles} disabled={isLoading}>
-                <RefreshCw size={18} className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
+              </span>
+            </MorphingButton>
+            
+            <MorphingButton
+              variant="glow"
+              onClick={resetProfiles}
+              disabled={isLoading}
+              morphTo={
+                <span className="flex items-center gap-2">
+                  <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+                  {isLoading ? "Loading..." : "New Profiles"}
+                </span>
+              }
+            >
+              <span className="flex items-center gap-2">
+                <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
                 Refresh
-              </Button>
-            </div>
+              </span>
+            </MorphingButton>
           </div>
+        </div>
 
-          <div className="flex justify-center items-center min-h-[70vh]">
-            {isLoading ? (
-              <div className="text-turquoise-300 animate-pulse">Loading profiles...</div>
-            ) : hasMoreProfiles ? (
-              <SwipeCard profile={currentProfile} onSwipe={handleSwipe} />
-            ) : (
-              <div className="text-center p-8 glass-effect rounded-xl max-w-md">
-                <h2 className="text-2xl font-bold text-turquoise-300 mb-4">No More Profiles</h2>
-                <p className="text-gray-300 mb-6">You've viewed all available profiles for now.</p>
-                <Button onClick={resetProfiles}>Refresh Profiles</Button>
+        <div className="flex justify-center items-center min-h-[70vh]">
+          {isLoading ? (
+            <FloatingCard variant="glass" className="text-center p-12">
+              <div className="animate-pulse">
+                <Sparkles size={48} className="mx-auto mb-4 text-teal-400 animate-spin" />
+                <AnimatedText variant="glow" className="text-xl">
+                  Loading new profiles...
+                </AnimatedText>
               </div>
-            )}
-          </div>
+            </FloatingCard>
+          ) : hasMoreProfiles ? (
+            <SwipeCard profile={currentProfile} onSwipe={handleSwipe} />
+          ) : (
+            <FloatingCard variant="glow" className="text-center p-12 max-w-md">
+              <AnimatedText variant="gradient" className="text-3xl font-bold mb-6">
+                No More Profiles
+              </AnimatedText>
+              <p className="text-gray-300 mb-8 text-lg">You've viewed all available profiles for now.</p>
+              <MorphingButton
+                variant="glow"
+                onClick={resetProfiles}
+                morphTo={
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={20} />
+                    Discover More
+                  </span>
+                }
+              >
+                <span className="flex items-center gap-2">
+                  <RefreshCw size={20} />
+                  Refresh Profiles
+                </span>
+              </MorphingButton>
+            </FloatingCard>
+          )}
         </div>
       </div>
     </div>

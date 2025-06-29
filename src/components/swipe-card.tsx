@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import { Heart, X, Info } from "lucide-react"
+import { Heart, X, Info, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
+import { FloatingCard } from "@/components/ui/floating-card"
+import { AnimatedText } from "@/components/ui/animated-text"
+import { MorphingButton } from "@/components/ui/morphing-button"
 
 interface SwipeCardProps {
   profile: {
@@ -19,31 +21,59 @@ interface SwipeCardProps {
 
 export function SwipeCard({ profile, onSwipe }: SwipeCardProps) {
   const [isFlipped, setIsFlipped] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
 
   return (
     <div className="w-full max-w-md mx-auto perspective-1000">
       <div
-        className={`relative w-full h-[600px] transform-style-3d transition-transform duration-500 ${isFlipped ? "rotate-y-180" : ""}`}
+        className={`relative w-full h-[600px] transform-style-3d transition-all duration-700 ${isFlipped ? "rotate-y-180" : ""}`}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Front of card (image) */}
-        <Card className={`swipe-card absolute inset-0 backface-hidden ${isFlipped ? "rotate-y-180" : ""}`}>
+        <FloatingCard 
+          variant="glow"
+          className={`swipe-card absolute inset-0 backface-hidden overflow-hidden ${isFlipped ? "rotate-y-180" : ""} ${isHovered ? 'shadow-2xl shadow-teal-500/30' : ''}`}
+        >
           <div className="relative w-full h-full">
             <img
               src={profile.imageUrl || "/placeholder.svg"}
               alt={profile.name}
-              className="w-full h-full object-cover rounded-xl"
+              className="w-full h-full object-cover rounded-xl transition-transform duration-700 hover:scale-110"
             />
-            <div className="swipe-card-gradient"></div>
+            
+            {/* Animated overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
+            
+            {/* Floating particles */}
+            <div className="absolute inset-0">
+              {Array.from({ length: 10 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute w-1 h-1 bg-teal-400/60 rounded-full animate-float"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                    animationDelay: `${Math.random() * 5}s`,
+                    animationDuration: `${3 + Math.random() * 4}s`
+                  }}
+                ></div>
+              ))}
+            </div>
 
             <div className="absolute bottom-0 left-0 p-6 w-full">
-              <h2 className="text-2xl font-bold text-white">
+              <AnimatedText variant="gradient" className="text-2xl font-bold mb-2">
                 {profile.name}, {profile.age}
-              </h2>
+              </AnimatedText>
 
               {profile.tags && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {profile.tags.map((tag) => (
-                    <span key={tag} className="px-2 py-1 text-xs rounded-full bg-teal-500/20 text-teal-300">
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {profile.tags.map((tag, index) => (
+                    <span 
+                      key={tag} 
+                      className="px-3 py-1 text-xs rounded-full bg-teal-500/20 text-teal-300 backdrop-blur-sm border border-teal-500/30 animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
                       {tag}
                     </span>
                   ))}
@@ -51,84 +81,106 @@ export function SwipeCard({ profile, onSwipe }: SwipeCardProps) {
               )}
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-4 right-4 bg-gray-900/50 backdrop-blur-sm rounded-full"
+            <MorphingButton
+              variant="glass"
+              className="absolute top-4 right-4 w-12 h-12 rounded-full p-0"
               onClick={() => setIsFlipped(true)}
+              morphTo={<Sparkles size={20} />}
             >
-              <Info size={20} className="text-white" />
-            </Button>
+              <Info size={20} />
+            </MorphingButton>
           </div>
-        </Card>
+        </FloatingCard>
 
         {/* Back of card (bio) */}
-        <Card className={`swipe-card absolute inset-0 backface-hidden rotate-y-180 ${isFlipped ? "" : "hidden"}`}>
+        <FloatingCard 
+          variant="glass"
+          className={`swipe-card absolute inset-0 backface-hidden rotate-y-180 ${isFlipped ? "" : "hidden"}`}
+        >
           <div className="p-6 flex flex-col h-full">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-white">
+              <AnimatedText variant="gradient" className="text-2xl font-bold">
                 {profile.name}, {profile.age}
-              </h2>
+              </AnimatedText>
               <Button
                 variant="ghost"
                 size="icon"
-                className="bg-gray-900/50 backdrop-blur-sm rounded-full"
+                className="rounded-full"
                 onClick={() => setIsFlipped(false)}
               >
-                <X size={20} className="text-white" />
+                <X size={20} />
               </Button>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
-              <h3 className="text-lg font-semibold text-teal-300 mb-2">About Me</h3>
-              <p className="text-gray-300 mb-6">{profile.bio}</p>
+            <div className="flex-1 overflow-y-auto space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-teal-300 mb-3 flex items-center gap-2">
+                  <Sparkles size={18} />
+                  About Me
+                </h3>
+                <p className="text-gray-300 leading-relaxed">{profile.bio}</p>
+              </div>
 
               {profile.tags && (
-                <>
-                  <h3 className="text-lg font-semibold text-teal-300 mb-2">Interests</h3>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {profile.tags.map((tag) => (
-                      <span key={tag} className="px-3 py-1 text-sm rounded-full bg-teal-500/20 text-teal-300">
+                <div>
+                  <h3 className="text-lg font-semibold text-teal-300 mb-3">Interests</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {profile.tags.map((tag, index) => (
+                      <span 
+                        key={tag} 
+                        className="px-3 py-2 text-sm rounded-xl bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-300 backdrop-blur-sm border border-teal-500/30 hover:scale-105 transition-transform duration-300"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                      >
                         {tag}
                       </span>
                     ))}
                   </div>
-                </>
+                </div>
               )}
             </div>
 
-            <Button
-              className="w-full mt-4"
+            <MorphingButton
+              variant="glow"
+              className="w-full mt-6"
               onClick={() => {
                 setIsFlipped(false)
                 onSwipe(profile.id, "right")
               }}
+              morphTo={
+                <span className="flex items-center gap-2">
+                  <Heart size={20} className="animate-pulse" />
+                  Let's Connect!
+                </span>
+              }
             >
-              <Heart size={20} className="mr-2" />
-              I'm Interested
-            </Button>
+              <span className="flex items-center gap-2">
+                <Heart size={20} />
+                I'm Interested
+              </span>
+            </MorphingButton>
           </div>
-        </Card>
+        </FloatingCard>
       </div>
 
       {/* Swipe buttons */}
-      <div className="flex justify-center space-x-4 mt-6">
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-14 w-14 rounded-full"
+      <div className="flex justify-center space-x-6 mt-8">
+        <MorphingButton
+          variant="neon"
+          className="h-16 w-16 rounded-full p-0"
           onClick={() => onSwipe(profile.id, "left")}
+          morphTo={<X size={28} className="text-red-400" />}
         >
           <X size={24} className="text-red-500" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          className="h-14 w-14 rounded-full"
+        </MorphingButton>
+        
+        <MorphingButton
+          variant="glow"
+          className="h-16 w-16 rounded-full p-0"
           onClick={() => onSwipe(profile.id, "right")}
+          morphTo={<Heart size={28} className="text-pink-400 animate-pulse" />}
         >
           <Heart size={24} className="text-teal-300" />
-        </Button>
+        </MorphingButton>
       </div>
     </div>
   )
