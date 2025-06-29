@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/logo"
 import { Menu, X } from "lucide-react"
@@ -30,23 +30,23 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-6">
-          <Link href="/about" className="text-gray-300 hover:text-teal-400 transition-colors">
+          <Link to="/about" className="text-gray-300 hover:text-teal-400 transition-colors">
             About
           </Link>
-          <Link href="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-colors">
+          <Link to="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-colors">
             Profile
           </Link>
-          <Link href="/companions" className="text-gray-300 hover:text-teal-400 transition-colors">
+          <Link to="/companions" className="text-gray-300 hover:text-teal-400 transition-colors">
             Companions
           </Link>
         </div>
 
         <div className="hidden md:flex space-x-2">
           <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
-            <Link href="/signin">Log In</Link>
+            <Link to="/signin">Log In</Link>
           </Button>
           <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-            <Link href="/signup">Sign Up</Link>
+            <Link to="/signup">Sign Up</Link>
           </Button>
         </div>
 
@@ -61,21 +61,21 @@ export function Navbar() {
         <div className="md:hidden bg-black/90 backdrop-blur-md">
           <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             <Link
-              href="/about"
+              to="/about"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
             </Link>
             <Link
-              href="/profile-setup"
+              to="/profile-setup"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Profile
             </Link>
             <Link
-              href="/companions"
+              to="/companions"
               className="text-gray-300 hover:text-teal-400 transition-colors py-2"
               onClick={() => setIsMobileMenuOpen(false)}
             >
@@ -83,10 +83,10 @@ export function Navbar() {
             </Link>
             <div className="flex flex-col space-y-2 pt-2">
               <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start" asChild>
-                <Link href="/signin">Log In</Link>
+                <Link to="/signin">Log In</Link>
               </Button>
               <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link href="/signup">Sign Up</Link>
+                <Link to="/signup">Sign Up</Link>
               </Button>
             </div>
           </div>

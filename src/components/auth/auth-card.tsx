@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -103,7 +103,7 @@ export function AuthCard({ onSignIn }: AuthCardProps) {
                 <div className="text-center mt-6">
                   <p className="text-galatea-light/70">
                     Don&apos;t have an account?{" "}
-                    <Link href="/signup" className="text-galatea-teal hover:underline">
+                    <Link to="/signup" className="text-galatea-teal hover:underline">
                       Sign up
                     </Link>
                   </p>
@@ -214,11 +214,11 @@ export function AuthCard({ onSignIn }: AuthCardProps) {
           <div className="mt-8 text-center">
             <p className="text-galatea-light/50 text-sm">
               By signing in, you agree to our{" "}
-              <Link href="/terms" className="text-galatea-teal/70 hover:text-galatea-teal">
+              <Link to="/terms" className="text-galatea-teal/70 hover:text-galatea-teal">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/privacy" className="text-galatea-teal/70 hover:text-galatea-teal">
+              <Link to="/privacy" className="text-galatea-teal/70 hover:text-galatea-teal">
                 Privacy Policy
               </Link>
             </p>

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom"
+
 interface LogoProps {
   size?: "small" | "medium" | "large"
   showText?: boolean
@@ -14,7 +16,7 @@ export function Logo({ size = "medium", showText = true, className = "" }: LogoP
   const dimension = sizes[size]
 
   return (
-    <a href="/" className={`flex items-center space-x-2 ${className}`}>
+    <Link to="/" className={`flex items-center space-x-2 ${className}`}>
       <div className="relative">
         <img 
           src="/favicon-white.png" 
@@ -30,6 +32,6 @@ export function Logo({ size = "medium", showText = true, className = "" }: LogoP
           Galatea<span className="text-teal-400">.AI</span>
         </span>
       )}
-    </a>
+    </Link>
   )
 }
