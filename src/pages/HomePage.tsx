@@ -3,26 +3,15 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { SparklesIcon, HeartIcon, ShieldCheckIcon } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { Link, useNavigate } from "react-router-dom"
 import { Navbar } from "@/components/navbar"
 import { LoadingScreen } from "@/components/loading"
 import { FeatureCard } from "@/components/feature-card"
 
-type AIProfile = {
-  uuid: string
-  id: number
-  name: string
-  age: number
-  bio: string
-  imageUrl: string
-}
-
-export default function Home() {
+export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState("Initializing...")
-  const router = useRouter()
+  const navigate = useNavigate()
 
   const handleStartSwiping = async () => {
     setIsLoading(true)
@@ -38,7 +27,7 @@ export default function Home() {
     }, 2000)
 
     setTimeout(() => {
-      router.push("/signin")
+      navigate("/signin")
     }, 3000)
   }
 
@@ -52,12 +41,10 @@ export default function Home() {
         {/* Hero Section */}
         <section className="relative h-screen flex items-center">
           <div className="absolute inset-0 z-0">
-            <Image
+            <img
               src="/hero.png"
               alt="AI Companion"
-              fill
-              style={{ objectFit: "cover", objectPosition: "center" }}
-              className="opacity-40"
+              className="w-full h-full object-cover opacity-40"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
           </div>
@@ -86,7 +73,7 @@ export default function Home() {
                   className="border-teal-500 text-teal-400 hover:bg-teal-500/10 text-lg px-8 py-6"
                   asChild
                 >
-                  <Link href="/loading">View Loading Screen</Link>
+                  <Link to="/loading">View Loading Screen</Link>
                 </Button>
               </div>
             </div>
@@ -172,12 +159,10 @@ export default function Home() {
                 </ol>
               </div>
               <div className="relative h-[600px] rounded-lg overflow-hidden">
-                <Image
+                <img
                   src="/images/galatea-3.png"
                   alt="AI Companion Creation Process"
-                  fill
-                  style={{ objectFit: "cover" }}
-                  className="rounded-lg"
+                  className="w-full h-full object-cover rounded-lg"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
               </div>
@@ -210,8 +195,8 @@ export default function Home() {
         <div className="container mx-auto px-6 py-12">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <Link href="/" className="flex items-center space-x-2 mb-4">
-                <Image
+              <Link to="/" className="flex items-center space-x-2 mb-4">
+                <img
                   src="/favicon-white.png"
                   alt="Galatea.AI Logo"
                   width={30}
@@ -230,17 +215,17 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-4">Company</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/about" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/about" className="text-gray-400 hover:text-teal-400">
                     About Us
                   </Link>
                 </li>
                 <li>
-                  <Link href="/careers" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/careers" className="text-gray-400 hover:text-teal-400">
                     Careers
                   </Link>
                 </li>
                 <li>
-                  <Link href="/blog" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/blog" className="text-gray-400 hover:text-teal-400">
                     Blog
                   </Link>
                 </li>
@@ -250,17 +235,17 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-4">Resources</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/help" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/help" className="text-gray-400 hover:text-teal-400">
                     Help Center
                   </Link>
                 </li>
                 <li>
-                  <Link href="/faq" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/faq" className="text-gray-400 hover:text-teal-400">
                     FAQ
                   </Link>
                 </li>
                 <li>
-                  <Link href="/community" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/community" className="text-gray-400 hover:text-teal-400">
                     Community
                   </Link>
                 </li>
@@ -270,17 +255,17 @@ export default function Home() {
               <h3 className="text-lg font-semibold mb-4">Legal</h3>
               <ul className="space-y-2">
                 <li>
-                  <Link href="/privacy" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/privacy" className="text-gray-400 hover:text-teal-400">
                     Privacy Policy
                   </Link>
                 </li>
                 <li>
-                  <Link href="/terms" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/terms" className="text-gray-400 hover:text-teal-400">
                     Terms of Service
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="text-gray-400 hover:text-teal-400">
+                  <Link to="/contact" className="text-gray-400 hover:text-teal-400">
                     Contact Us
                   </Link>
                 </li>
@@ -300,11 +285,10 @@ function CompanionCard({ image, name, description }: { image: string; name: stri
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden transition-transform hover:scale-105 hover:border-teal-500/30 group flex flex-col h-full">
       <div className="relative h-80">
-        <Image
+        <img
           src={image || "/placeholder.svg"}
           alt={name}
-          fill
-          style={{ objectFit: "cover", objectPosition: "top" }}
+          className="w-full h-full object-cover object-top"
         />
       </div>
       <div className="p-6 flex flex-col flex-grow">

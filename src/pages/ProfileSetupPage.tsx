@@ -1,11 +1,11 @@
 import { ProfileSetupForm } from "@/components/ProfileSetupForm"
-import { Header } from "@/components/navbar"
+import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
-export default function ProfileSetup() {
+export default function ProfileSetupPage() {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Navbar />
 
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">

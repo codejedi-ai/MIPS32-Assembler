@@ -1,8 +1,6 @@
-//import { LoadingScreen } from "@/components/loading"
-
 import { LoadingScreen } from "@/components/loading"
 
-export default function Home() {
+export default function LoadingPage() {
   return (
     <div className="min-h-screen">
       <LoadingScreen />

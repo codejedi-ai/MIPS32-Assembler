@@ -4,6 +4,7 @@ import { useState } from "react"
 import { SwipeCard } from "@/components/swipe-card"
 import { Button } from "@/components/ui/button"
 import { Filter, RefreshCw } from "lucide-react"
+import { Sidebar } from "@/components/sidebar"
 
 // Mock data for AI profiles
 const mockProfiles = [
@@ -63,36 +64,41 @@ export default function DiscoverPage() {
   const hasSwipedAll = Object.keys(swipedProfiles).length === profiles.length
 
   return (
-    <div className="p-6 md:p-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Discover Companions</h1>
-          <p className="text-gray-400">Find your perfect AI match by swiping through profiles.</p>
-        </div>
-        <div className="mt-4 md:mt-0 flex space-x-3">
-          <Button variant="outline">
-            <Filter size={18} className="mr-2" />
-            Filters
-          </Button>
-          <Button onClick={resetProfiles} disabled={isLoading}>
-            <RefreshCw size={18} className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex justify-center items-center min-h-[70vh]">
-        {isLoading ? (
-          <div className="text-turquoise-300 animate-pulse">Loading profiles...</div>
-        ) : hasMoreProfiles ? (
-          <SwipeCard profile={currentProfile} onSwipe={handleSwipe} />
-        ) : (
-          <div className="text-center p-8 glass-effect rounded-xl max-w-md">
-            <h2 className="text-2xl font-bold text-turquoise-300 mb-4">No More Profiles</h2>
-            <p className="text-gray-300 mb-6">You've viewed all available profiles for now.</p>
-            <Button onClick={resetProfiles}>Refresh Profiles</Button>
+    <div className="min-h-screen bg-black">
+      <Sidebar />
+      <div className="md:ml-64 min-h-screen transition-all duration-300">
+        <div className="p-6 md:p-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">Discover Companions</h1>
+              <p className="text-gray-400">Find your perfect AI match by swiping through profiles.</p>
+            </div>
+            <div className="mt-4 md:mt-0 flex space-x-3">
+              <Button variant="outline">
+                <Filter size={18} className="mr-2" />
+                Filters
+              </Button>
+              <Button onClick={resetProfiles} disabled={isLoading}>
+                <RefreshCw size={18} className={`mr-2 ${isLoading ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
-        )}
+
+          <div className="flex justify-center items-center min-h-[70vh]">
+            {isLoading ? (
+              <div className="text-turquoise-300 animate-pulse">Loading profiles...</div>
+            ) : hasMoreProfiles ? (
+              <SwipeCard profile={currentProfile} onSwipe={handleSwipe} />
+            ) : (
+              <div className="text-center p-8 glass-effect rounded-xl max-w-md">
+                <h2 className="text-2xl font-bold text-turquoise-300 mb-4">No More Profiles</h2>
+                <p className="text-gray-300 mb-6">You've viewed all available profiles for now.</p>
+                <Button onClick={resetProfiles}>Refresh Profiles</Button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

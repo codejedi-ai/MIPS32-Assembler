@@ -1,14 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useNavigate } from "react-router-dom"
 import { AuthCard } from "@/components/auth/auth-card"
 import { Logo } from "@/components/logo"
 import { LoadingScreen } from "@/components/loading"
-import Image from "next/image"
 
 export default function SignInPage() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [loadingMessage, setLoadingMessage] = useState("Authenticating...")
@@ -41,7 +40,7 @@ export default function SignInPage() {
       )
 
       // Simulate successful login
-      router.push("/dashboard")
+      navigate("/dashboard")
     } catch (err) {
       setIsLoading(false)
       setError("Invalid email or password. Please try again.")
@@ -55,12 +54,10 @@ export default function SignInPage() {
 
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <Image
-          src="signin.png"
+        <img
+          src="/signin.png"
           alt="Galatea background"
-          fill
-          priority
-          className="object-cover object-center"
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40 backdrop-blur-sm"></div>
       </div>

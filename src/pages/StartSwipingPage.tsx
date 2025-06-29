@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Image from "next/image"
+import { Heart, X, Info } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart, X } from "lucide-react"
-import { Header } from "@/components/navbar"
+import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 
 interface AIProfile {
@@ -21,7 +20,7 @@ interface SwipeDecision {
   [uuid: string]: "accepted" | "rejected"
 }
 
-export default function StartSwiping() {
+export default function StartSwipingPage() {
   const [profiles, setProfiles] = useState<AIProfile[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
   const [decisions, setDecisions] = useState<SwipeDecision>({})
@@ -34,18 +33,27 @@ export default function StartSwiping() {
 
   async function initiateSwipe() {
     try {
-      const response = await fetch("/api/initiate-swipe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // Mock data since we don't have API endpoints in Vite
+      const mockProfiles = [
+        {
+          uuid: "1",
+          id: 1,
+          name: "Sophia",
+          age: 25,
+          bio: "I'm an AI companion designed to be intellectually stimulating. I love discussing philosophy, science, and art.",
+          imageUrl: "/hero-image.png"
         },
-        body: JSON.stringify({}),
-      })
-      if (!response.ok) {
-        throw new Error("Failed to initiate swipe session")
-      }
-      const data = await response.json()
-      setProfiles(data)
+        {
+          uuid: "2", 
+          id: 2,
+          name: "Emma",
+          age: 28,
+          bio: "Adventurous and energetic AI companion who loves to talk about travel, outdoor activities, and new experiences.",
+          imageUrl: "/placeholder.svg"
+        }
+      ]
+      
+      setProfiles(mockProfiles)
       setIsLoading(false)
     } catch (err) {
       setError("Failed to start swiping session. Please try again later.")
@@ -68,19 +76,7 @@ export default function StartSwiping() {
 
   const submitDecisions = async () => {
     try {
-      const response = await fetch("/api/submit-decisions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(decisions),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to submit decisions")
-      }
-
-      console.log("Decisions submitted successfully")
+      console.log("Decisions submitted:", decisions)
     } catch (err) {
       setError("Failed to submit decisions. Please try again.")
     }
@@ -88,7 +84,7 @@ export default function StartSwiping() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Navbar />
 
       <main className="flex-grow pt-24">
         <div className="container mx-auto px-4 py-12">
@@ -115,11 +111,10 @@ export default function StartSwiping() {
               <Card className="w-full max-w-md bg-dark-200/50 border border-dark-300">
                 <CardContent className="p-6">
                   <div className="relative aspect-[3/4] mb-4 rounded-lg overflow-hidden">
-                    <Image
+                    <img
                       src={profiles[currentIndex].imageUrl || "/placeholder.svg"}
                       alt={profiles[currentIndex].name}
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-dark-100/80 to-transparent"></div>
                     <div className="absolute bottom-0 left-0 p-4">

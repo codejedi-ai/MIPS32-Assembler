@@ -1,15 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { Link, useLocation } from "react-router-dom"
 import { Logo } from "@/components/logo"
 import { Home, Heart, MessageSquare, Settings, User, LogOut, Menu, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Image from "next/image"
 
 export function Sidebar() {
-  const pathname = usePathname()
+  const location = useLocation()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
@@ -46,7 +44,7 @@ export function Sidebar() {
           <div className="p-4 border-b border-gray-800 flex justify-between items-center">
             {isCollapsed ? (
               <div className="mx-auto">
-                <Image
+                <img
                   src="/galatea-ai-logo.png"
                   alt="Galatea.AI Logo"
                   width={30}
@@ -94,10 +92,10 @@ export function Sidebar() {
               {navItems.map((item) => (
                 <li key={item.name}>
                   <Link
-                    href={item.href}
+                    to={item.href}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-md transition-colors
                     ${
-                      pathname === item.href
+                      location.pathname === item.href
                         ? "bg-teal-500/20 text-teal-400"
                         : "text-gray-400 hover:bg-gray-800 hover:text-white"
                     }`}
@@ -114,7 +112,7 @@ export function Sidebar() {
           {/* Logout */}
           <div className="p-4 border-t border-gray-800">
             <Link
-              href="/logout"
+              to="/logout"
               className={`flex items-center space-x-3 px-3 py-2 rounded-md text-gray-400 hover:bg-gray-800 hover:text-white transition-colors`}
               onClick={() => setIsMobileOpen(false)}
             >

@@ -46,6 +46,12 @@ const config = {
           teal: "#00c4f0",
           light: "#e0e0e0",
         },
+        dark: {
+          100: "#0a0c10",
+          200: "#111318",
+          300: "#1a1d24",
+          400: "#2a2f3a",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
