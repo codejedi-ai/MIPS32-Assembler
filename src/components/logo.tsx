@@ -1,6 +1,3 @@
-import Image from "next/image"
-import Link from "next/link"
-
 interface LogoProps {
   size?: "small" | "medium" | "large"
   showText?: boolean
@@ -17,9 +14,14 @@ export function Logo({ size = "medium", showText = true, className = "" }: LogoP
   const dimension = sizes[size]
 
   return (
-    <Link href="/" className={`flex items-center space-x-2 ${className}`}>
+    <a href="/" className={`flex items-center space-x-2 ${className}`}>
       <div className="relative">
-        <Image src="/favicon-white.png" alt="Galatea.AI Logo" width={dimension} height={dimension} />
+        <img 
+          src="/favicon-white.png" 
+          alt="Galatea.AI Logo" 
+          width={dimension} 
+          height={dimension} 
+        />
       </div>
       {showText && (
         <span
@@ -28,6 +30,6 @@ export function Logo({ size = "medium", showText = true, className = "" }: LogoP
           Galatea<span className="text-teal-400">.AI</span>
         </span>
       )}
-    </Link>
+    </a>
   )
 }
