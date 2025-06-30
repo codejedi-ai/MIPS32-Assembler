@@ -1,9 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
 import { Shield, Sparkles, Layers, Droplets, Wind, Star } from "lucide-react"
-import { Link } from "react-router-dom"
 import { Navbar } from "@/components/navbar"
 import { FeatureCard } from "@/components/feature-card"
 import { Footer } from "@/components/footer"
@@ -49,21 +46,12 @@ export default function HomePage() {
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="flex flex-col sm:flex-row gap-4"
                 >
-                  <Button
-                    size="lg"
-                    className="bg-blue-600 text-white hover:bg-blue-700 text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-                    asChild
-                  >
-                    <Link to="/order">Order Now</Link>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-8 py-6 rounded-full"
-                    asChild
-                  >
-                    <Link to="/technology">Learn More</Link>
-                  </Button>
+                  <button className="bg-blue-600 text-white hover:bg-blue-700 text-lg px-8 py-6 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                    Order Now
+                  </button>
+                  <button className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 text-lg px-8 py-6 rounded-full">
+                    Learn More
+                  </button>
                 </motion.div>
               </motion.div>
 
@@ -105,7 +93,7 @@ export default function HomePage() {
         </section>
 
         {/* Core Functions Section */}
-        <section className="py-24 bg-white">
+        <section id="technology" className="py-24 bg-white">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -146,7 +134,7 @@ export default function HomePage() {
         </section>
 
         {/* Materials Section */}
-        <section className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
+        <section id="materials" className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
           <div className="container mx-auto px-6">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <motion.div
@@ -213,7 +201,7 @@ export default function HomePage() {
         </section>
 
         {/* Testimonial Section */}
-        <section className="py-24 bg-white">
+        <section id="testimonials" className="py-24 bg-white">
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -248,6 +236,28 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* About Section */}
+        <section id="about" className="py-24 bg-gradient-to-br from-blue-50 to-purple-50">
+          <div className="container mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gray-800">
+                The Future of <span className="text-blue-600">Intelligent Clothing</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                The Secundus Dermis represents more than just an advancement in textile technology—it's a paradigm shift 
+                toward clothing that truly understands and adapts to human needs. Our revolutionary approach combines 
+                cutting-edge materials science with elegant design to create a garment that empowers you to live without compromise.
+              </p>
+            </motion.div>
+          </div>
+        </section>
+
         {/* CTA Section */}
         <section className="py-24 bg-gradient-to-r from-blue-600 to-purple-600">
           <div className="container mx-auto px-6 text-center">
@@ -263,13 +273,9 @@ export default function HomePage() {
               <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
                 Join the revolution in intelligent clothing. Experience the perfect blend of luxury, technology, and functionality.
               </p>
-              <Button
-                size="lg"
-                className="bg-white text-blue-600 hover:bg-blue-50 text-xl py-6 px-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
-                asChild
-              >
-                <Link to="/order">Order Your Secundus Dermis</Link>
-              </Button>
+              <button className="bg-white text-blue-600 hover:bg-blue-50 text-xl py-6 px-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300">
+                Order Your Secundus Dermis
+              </button>
             </motion.div>
           </div>
         </section>
