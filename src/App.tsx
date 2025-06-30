@@ -1,26 +1,22 @@
 import { Routes, Route } from 'react-router-dom'
 import HomePage from './pages/HomePage'
-import SignInPage from './pages/SignInPage'
-import SignUpPage from './pages/SignUpPage'
-import LoadingPage from './pages/LoadingPage'
-import ProfileSetupPage from './pages/ProfileSetupPage'
-import StartSwipingPage from './pages/StartSwipingPage'
-import DashboardPage from './pages/DashboardPage'
-import DiscoverPage from './pages/DiscoverPage'
-import MessagesPage from './pages/MessagesPage'
+import TechnologyPage from './pages/TechnologyPage'
+import MaterialsPage from './pages/MaterialsPage'
+import TestimonialsPage from './pages/TestimonialsPage'
+import OrderPage from './pages/OrderPage'
+import AboutPage from './pages/AboutPage'
+import ContactPage from './pages/ContactPage'
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-      <Route path="/signin" element={<SignInPage />} />
-      <Route path="/signup" element={<SignUpPage />} />
-      <Route path="/loading" element={<LoadingPage />} />
-      <Route path="/profile-setup" element={<ProfileSetupPage />} />
-      <Route path="/start-swiping" element={<StartSwipingPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
-      <Route path="/dashboard/discover" element={<DiscoverPage />} />
-      <Route path="/dashboard/messages" element={<MessagesPage />} />
+      <Route path="/technology" element={<TechnologyPage />} />
+      <Route path="/materials" element={<MaterialsPage />} />
+      <Route path="/testimonials" element={<TestimonialsPage />} />
+      <Route path="/order" element={<OrderPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
     </Routes>
   )
 }

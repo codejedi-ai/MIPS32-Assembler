@@ -1,20 +1,31 @@
 import React from "react"
 import { Card, CardContent } from "@/components/ui/card"
+import { motion } from "framer-motion"
 
 interface FeatureCardProps {
   icon: React.ReactNode
   title: string
   description: string
+  delay?: number
 }
 
-export function FeatureCard({ icon, title, description }: FeatureCardProps) {
+export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCardProps) {
   return (
-    <Card className="bg-dark-200/50 border border-dark-300 hover:border-teal-500/30 transition-all duration-300 hover:translate-y-[-5px]">
-      <CardContent className="p-6 text-center">
-        <div className="flex justify-center mb-6 text-teal-400">{icon}</div>
-        <h3 className="text-xl font-semibold text-gray-100 mb-3">{title}</h3>
-        <p className="text-gray-400">{description}</p>
-      </CardContent>
-    </Card>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay }}
+      viewport={{ once: true }}
+    >
+      <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-lg group">
+        <CardContent className="p-8 text-center">
+          <div className="flex justify-center mb-6 text-blue-600 group-hover:scale-110 transition-transform duration-300">
+            {icon}
+          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
+          <p className="text-gray-600 leading-relaxed">{description}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
   )
 }

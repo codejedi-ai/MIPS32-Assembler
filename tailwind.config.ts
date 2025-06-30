@@ -20,38 +20,6 @@ const config = {
     },
     extend: {
       colors: {
-        teal: {
-          50: "#e6fcff",
-          100: "#c2f9ff",
-          200: "#8ff2ff",
-          300: "#4ee6ff",
-          400: "#1cd8ff",
-          500: "#00c4f0",
-          600: "#009bc2",
-          700: "#007a9e",
-          800: "#006380",
-          900: "#00526a",
-          950: "#003544",
-        },
-        gray: {
-          950: "#0a0c10",
-          900: "#111318",
-          800: "#1a1d24",
-          700: "#2a2f3a",
-        },
-        black: "#050507",
-        galatea: {
-          black: "#050507",
-          dark: "#0a0f14",
-          teal: "#00c4f0",
-          light: "#e0e0e0",
-        },
-        dark: {
-          100: "#0a0c10",
-          200: "#111318",
-          300: "#1a1d24",
-          400: "#2a2f3a",
-        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -100,10 +68,32 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "fade-in": {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        "slide-in-left": {
+          "0%": { opacity: "0", transform: "translateX(-50px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
+        "slide-in-right": {
+          "0%": { opacity: "0", transform: "translateX(50px)" },
+          "100%": { opacity: "1", transform: "translateX(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in": "fade-in 0.6s ease-out",
+        "slide-in-left": "slide-in-left 0.6s ease-out",
+        "slide-in-right": "slide-in-right 0.6s ease-out",
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+      },
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic": "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
     },
   },

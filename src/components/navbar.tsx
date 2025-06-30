@@ -22,71 +22,81 @@ export function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-black/60 backdrop-blur-md border-b border-teal-500/20" : "bg-transparent backdrop-blur-sm"
+        isScrolled ? "bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm" : "bg-transparent backdrop-blur-sm"
       }`}
     >
       <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
         <Logo />
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-6">
-          <Link to="/about" className="text-gray-300 hover:text-teal-400 transition-colors">
+        <div className="hidden md:flex space-x-8">
+          <Link to="/technology" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            Technology
+          </Link>
+          <Link to="/materials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            Materials
+          </Link>
+          <Link to="/testimonials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
+            Testimonials
+          </Link>
+          <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
             About
-          </Link>
-          <Link to="/profile-setup" className="text-gray-300 hover:text-teal-400 transition-colors">
-            Profile
-          </Link>
-          <Link to="/companions" className="text-gray-300 hover:text-teal-400 transition-colors">
-            Companions
           </Link>
         </div>
 
-        <div className="hidden md:flex space-x-2">
-          <Button variant="ghost" className="text-gray-300 hover:text-teal-400 hover:bg-black/20" asChild>
-            <Link to="/signin">Log In</Link>
+        <div className="hidden md:flex space-x-3">
+          <Button variant="ghost" className="text-gray-700 hover:text-blue-600" asChild>
+            <Link to="/contact">Contact</Link>
           </Button>
-          <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-            <Link to="/signup">Sign Up</Link>
+          <Button className="bg-blue-600 text-white hover:bg-blue-700" asChild>
+            <Link to="/order">Order Now</Link>
           </Button>
         </div>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-white" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        <button className="md:hidden text-gray-700" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-black/90 backdrop-blur-md">
+        <div className="md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200">
           <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
             <Link
+              to="/technology"
+              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Technology
+            </Link>
+            <Link
+              to="/materials"
+              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Materials
+            </Link>
+            <Link
+              to="/testimonials"
+              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Testimonials
+            </Link>
+            <Link
               to="/about"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
+              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               About
             </Link>
-            <Link
-              to="/profile-setup"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Profile
-            </Link>
-            <Link
-              to="/companions"
-              className="text-gray-300 hover:text-teal-400 transition-colors py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Companions
-            </Link>
             <div className="flex flex-col space-y-2 pt-2">
-              <Button variant="ghost" className="text-gray-300 hover:text-teal-400 justify-start" asChild>
-                <Link to="/signin">Log In</Link>
+              <Button variant="ghost" className="text-gray-700 hover:text-blue-600 justify-start" asChild>
+                <Link to="/contact">Contact</Link>
               </Button>
-              <Button className="bg-teal-500 text-black hover:bg-teal-400" asChild>
-                <Link to="/signup">Sign Up</Link>
+              <Button className="bg-blue-600 text-white hover:bg-blue-700" asChild>
+                <Link to="/order">Order Now</Link>
               </Button>
             </div>
           </div>
