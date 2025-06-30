@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { Box, Typography } from "@mui/material"
 
 interface LogoProps {
   size?: "small" | "medium" | "large"
@@ -8,27 +9,49 @@ interface LogoProps {
 
 export function Logo({ size = "medium", showText = true, className = "" }: LogoProps) {
   const sizes = {
-    small: 30,
-    medium: 40,
-    large: 120,
+    small: { width: 32, height: 32, fontSize: "0.875rem" },
+    medium: { width: 40, height: 40, fontSize: "1.25rem" },
+    large: { width: 120, height: 120, fontSize: "3rem" },
   }
 
-  const dimension = sizes[size]
+  const { width, height, fontSize } = sizes[size]
 
   return (
-    <Link to="/" className={`flex items-center space-x-3 ${className}`}>
-      <div className="relative">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-lg">SD</span>
-        </div>
-      </div>
-      {showText && (
-        <span
-          className={`font-bold text-gray-800 ${size === "large" ? "text-3xl" : size === "small" ? "text-lg" : "text-xl"}`}
+    <Link to="/" style={{ textDecoration: 'none' }} className={className}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box
+          sx={{
+            width,
+            height,
+            background: 'linear-gradient(135deg, #3b82f6 0%, #9333ea 100%)',
+            borderRadius: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
         >
-          Secundus<span className="text-blue-600"> Dermis</span>
-        </span>
-      )}
+          <Typography
+            sx={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: fontSize,
+            }}
+          >
+            SD
+          </Typography>
+        </Box>
+        {showText && (
+          <Typography
+            sx={{
+              fontWeight: 'bold',
+              color: 'text.primary',
+              fontSize: size === "large" ? "2rem" : size === "small" ? "1.125rem" : "1.25rem",
+            }}
+          >
+            Secundus<Box component="span" sx={{ color: 'primary.main' }}> Dermis</Box>
+          </Typography>
+        )}
+      </Box>
     </Link>
   )
 }

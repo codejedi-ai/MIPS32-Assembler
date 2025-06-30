@@ -1,8 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { AppBar, Toolbar, Button, IconButton, Drawer, List, ListItem, ListItemText, Box } from "@mui/material"
+import { Menu, Close } from "@mui/icons-material"
 import { Logo } from "@/components/logo"
-import { Menu, X } from "lucide-react"
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -17,89 +18,106 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const navItems = [
+    { label: "Technology", href: "#technology" },
+    { label: "Materials", href: "#materials" },
+    { label: "Testimonials", href: "#testimonials" },
+    { label: "About", href: "#about" },
+  ]
+
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm" : "bg-transparent backdrop-blur-sm"
-      }`}
+    <AppBar
+      position="fixed"
+      elevation={isScrolled ? 1 : 0}
+      sx={{
+        backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+        backdropFilter: 'blur(10px)',
+        transition: 'all 0.3s ease',
+        borderBottom: isScrolled ? '1px solid rgba(229, 231, 235, 1)' : 'none',
+      }}
     >
-      <nav className="container mx-auto px-6 py-4 flex justify-between items-center">
+      <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 6 } }}>
         <Logo />
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex space-x-8">
-          <a href="#technology" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-            Technology
-          </a>
-          <a href="#materials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-            Materials
-          </a>
-          <a href="#testimonials" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-            Testimonials
-          </a>
-          <a href="#about" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">
-            About
-          </a>
-        </div>
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+          {navItems.map((item) => (
+            <Button
+              key={item.label}
+              href={item.href}
+              sx={{
+                color: 'text.primary',
+                fontWeight: 500,
+                '&:hover': {
+                  color: 'primary.main',
+                },
+              }}
+            >
+              {item.label}
+            </Button>
+          ))}
+        </Box>
 
-        <div className="hidden md:flex space-x-3">
-          <button className="text-gray-700 hover:text-blue-600 px-4 py-2 rounded-md transition-colors">
+        <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1 }}>
+          <Button
+            sx={{
+              color: 'text.primary',
+              '&:hover': {
+                color: 'primary.main',
+              },
+            }}
+          >
             Contact
-          </button>
-          <button className="bg-blue-600 text-white hover:bg-blue-700 px-6 py-2 rounded-md transition-colors">
+          </Button>
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: 'primary.main',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
+              },
+            }}
+          >
             Order Now
-          </button>
-        </div>
+          </Button>
+        </Box>
 
         {/* Mobile Menu Button */}
-        <button className="md:hidden text-gray-700" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-      </nav>
+        <IconButton
+          sx={{ display: { xs: 'block', md: 'none' }, color: 'text.primary' }}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <Close /> : <Menu />}
+        </IconButton>
+      </Toolbar>
 
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-white/95 backdrop-blur-md border-b border-gray-200">
-          <div className="container mx-auto px-6 py-4 flex flex-col space-y-4">
-            <a
-              href="#technology"
-              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Technology
-            </a>
-            <a
-              href="#materials"
-              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Materials
-            </a>
-            <a
-              href="#testimonials"
-              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Testimonials
-            </a>
-            <a
-              href="#about"
-              className="text-gray-700 hover:text-blue-600 transition-colors py-2 font-medium"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              About
-            </a>
-            <div className="flex flex-col space-y-2 pt-2">
-              <button className="text-gray-700 hover:text-blue-600 text-left py-2">
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="right"
+        open={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        <Box sx={{ width: 250, pt: 2 }}>
+          <List>
+            {navItems.map((item) => (
+              <ListItem key={item.label} component="a" href={item.href} onClick={() => setIsMobileMenuOpen(false)}>
+                <ListItemText primary={item.label} />
+              </ListItem>
+            ))}
+            <ListItem>
+              <Button fullWidth variant="outlined" sx={{ mt: 1 }}>
                 Contact
-              </button>
-              <button className="bg-blue-600 text-white hover:bg-blue-700 py-2 rounded-md">
+              </Button>
+            </ListItem>
+            <ListItem>
+              <Button fullWidth variant="contained">
                 Order Now
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </header>
+              </Button>
+            </ListItem>
+          </List>
+        </Box>
+      </Drawer>
+    </AppBar>
   )
 }

@@ -1,4 +1,5 @@
 import React from "react"
+import { Card, CardContent, Typography, Box } from "@mui/material"
 import { motion } from "framer-motion"
 
 interface FeatureCardProps {
@@ -15,13 +16,43 @@ export function FeatureCard({ icon, title, description, delay = 0 }: FeatureCard
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay }}
       viewport={{ once: true }}
-      className="bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 transition-all duration-300 hover:shadow-lg group rounded-lg p-8 text-center"
     >
-      <div className="flex justify-center mb-6 text-blue-600 group-hover:scale-110 transition-transform duration-300">
-        {icon}
-      </div>
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">{title}</h3>
-      <p className="text-gray-600 leading-relaxed">{description}</p>
+      <Card
+        sx={{
+          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
+          border: '1px solid rgba(229, 231, 235, 1)',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            borderColor: 'primary.main',
+            boxShadow: 3,
+            transform: 'translateY(-2px)',
+          },
+        }}
+      >
+        <CardContent sx={{ textAlign: 'center', p: 4 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              mb: 3,
+              color: 'primary.main',
+              transition: 'transform 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.1)',
+              },
+            }}
+          >
+            {icon}
+          </Box>
+          <Typography variant="h6" component="h3" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
+            {title}
+          </Typography>
+          <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+            {description}
+          </Typography>
+        </CardContent>
+      </Card>
     </motion.div>
   )
 }

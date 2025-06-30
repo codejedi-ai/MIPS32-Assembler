@@ -10,9 +10,10 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@radix-ui/react-label": "2.1.1",
-    "@radix-ui/react-slot": "1.1.1",
-    "class-variance-authority": "^0.7.1",
+    "@mui/material": "^5.15.3",
+    "@mui/icons-material": "^5.15.3",
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.454.0",

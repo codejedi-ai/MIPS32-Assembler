@@ -1,97 +1,110 @@
 import { Link } from "react-router-dom"
-import { Mail, Phone, MapPin } from "lucide-react"
+import { Box, Container, Grid, Typography, IconButton } from "@mui/material"
+import { Email, Phone, LocationOn } from "@mui/icons-material"
 
 export function Footer() {
   return (
-    <footer className="bg-gray-50 border-t border-gray-200">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-gray-800">Secundus Dermis</h3>
-            <p className="text-gray-600">
-              Revolutionary all-in-one base layer that redefines what an underlayer can achieve.
-            </p>
-            <div className="flex space-x-4">
-              <div className="text-gray-500 hover:text-blue-600 cursor-pointer">
-                <Mail size={20} />
-              </div>
-              <div className="text-gray-500 hover:text-blue-600 cursor-pointer">
-                <Phone size={20} />
-              </div>
-              <div className="text-gray-500 hover:text-blue-600 cursor-pointer">
-                <MapPin size={20} />
-              </div>
-            </div>
-          </div>
+    <Box component="footer" sx={{ backgroundColor: 'grey.50', borderTop: '1px solid', borderColor: 'grey.200' }}>
+      <Container maxWidth="lg" sx={{ py: 6 }}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={3}>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary', mb: 2 }}>
+                Secundus Dermis
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
+                Revolutionary all-in-one base layer that redefines what an underlayer can achieve.
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
+                  <Email />
+                </IconButton>
+                <IconButton size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
+                  <Phone />
+                </IconButton>
+                <IconButton size="small" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
+                  <LocationOn />
+                </IconButton>
+              </Box>
+            </Box>
+          </Grid>
 
-          <div>
-            <h4 className="font-medium text-gray-800 mb-4">Product</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/technology" className="text-gray-600 hover:text-blue-600">
+          <Grid item xs={12} md={3}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500, color: 'text.primary', mb: 2 }}>
+              Product
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Link to="/technology" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Technology
-                </Link>
-              </li>
-              <li>
-                <Link to="/materials" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="/materials" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Materials
-                </Link>
-              </li>
-              <li>
-                <Link to="/testimonials" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="/testimonials" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Testimonials
-                </Link>
-              </li>
-            </ul>
-          </div>
+                </Typography>
+              </Link>
+            </Box>
+          </Grid>
 
-          <div>
-            <h4 className="font-medium text-gray-800 mb-4">Company</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/about" className="text-gray-600 hover:text-blue-600">
+          <Grid item xs={12} md={3}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500, color: 'text.primary', mb: 2 }}>
+              Company
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Link to="/about" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   About
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="/contact" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="#" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Careers
-                </Link>
-              </li>
-            </ul>
-          </div>
+                </Typography>
+              </Link>
+            </Box>
+          </Grid>
 
-          <div>
-            <h4 className="font-medium text-gray-800 mb-4">Support</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-blue-600">
+          <Grid item xs={12} md={3}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 500, color: 'text.primary', mb: 2 }}>
+              Support
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <Link to="#" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Size Guide
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="#" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Care Instructions
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="text-gray-600 hover:text-blue-600">
+                </Typography>
+              </Link>
+              <Link to="#" style={{ textDecoration: 'none' }}>
+                <Typography variant="body2" sx={{ color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
                   Returns
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
+                </Typography>
+              </Link>
+            </Box>
+          </Grid>
+        </Grid>
 
-        <div className="border-t border-gray-200 mt-12 pt-8 text-center text-gray-600">
-          <p>© 2024 Secundus Dermis. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
+        <Box sx={{ borderTop: '1px solid', borderColor: 'grey.200', mt: 6, pt: 4, textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            © 2024 Secundus Dermis. All rights reserved.
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
   )
 }
