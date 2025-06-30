@@ -1,3 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* KaTeX CSS for LaTeX rendering */
+@import 'katex/dist/katex.min.css';
