@@ -1,8 +1,0 @@
-=== ASSEMBLY DEBUG OUTPUT ===
-File: test_add_debug.tbin
-Generated from: test_add_debug.merl
-
-Assembly Instructions:
-  (Debug mode - no binary output generated)
-
-=== END DEBUG OUTPUT ===
