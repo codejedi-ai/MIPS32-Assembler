@@ -1,0 +1,21 @@
+.export foo
+.import bar
+
+foo:
+lis $2
+.word -1        ; $2 = -1 (used to decrement $1 in the loop)
+lis $28
+.word loop      ; $28 = loop (used as the return address for skip)
+lis $29
+.word bar       ; $29 = address of imported bar (ESR placeholder)
+
+loop:
+lw $3, 0($29)   ; Load value from the address in $29 (address of bar)
+add $3, $1, $3  ; $3 = $1 + $3
+sw $3, 0($29)   ; Store result back to the address in $29
+add $1, $1, $2  ; $1 = $1 + (-1) (decrement $1)
+bne $1,$0, skip ; If $1 != 0, jump to skip (REL entry for branch)
+jr $31          ; If $1 == 0, return to caller ($31)
+
+skip:
+jr $28          ; Jump back to the start of the loop (address stored in $28)

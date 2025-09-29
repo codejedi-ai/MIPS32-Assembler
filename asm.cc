@@ -663,7 +663,7 @@ vector<uint32_t> get_merl_file(vector<uint32_t> assembly_binary_code, vector<uin
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
   Assembler assembler;
   // import lable from .import make set
   std::set<std::string> import_lables;
@@ -671,6 +671,12 @@ int main() {
   std::set<std::string> export_lables;
   string file_suffix = ".bin";
   uint32_t pc_start = 0;
+  
+  // Get output filename from command line argument
+  std::string output_filename = "output.bin";
+  if (argc >= 2) {
+    output_filename = argv[1];
+  }
   try {
     std::string line;
     while (getline(std::cin, line)) {
@@ -690,6 +696,10 @@ int main() {
             assembler.addImportedLabel(label);
             file_suffix = ".merl";
             pc_start = 0xc;
+            // Update output filename to .merl if not already set
+            if (output_filename == "output.bin") {
+              output_filename = "output.merl";
+            }
             continue;
           }
         } else if (toks[0].getKind() == Token::EXPORT) {
@@ -698,6 +708,10 @@ int main() {
             export_lables.insert(label);
             file_suffix = ".merl";
             pc_start = 0xc;
+            // Update output filename to .merl if not already set
+            if (output_filename == "output.bin") {
+              output_filename = "output.merl";
+            }
             continue;
           }
         }
@@ -711,13 +725,44 @@ int main() {
   }
   Assembler::AsmReturn result = assembler.assemble(pc_start);
   if (result.error) return 1;
-  vector<uint32_t> entries_binary = get_entries_binary(export_lables, import_lables, result.symbolTable, result.lable_pc_map);
-  vector<uint32_t> merl_file = get_merl_file(result.assembly_binary_code, entries_binary);
-  // print the merl_file
-  std::cerr << "Merl file: " << endl;
-  for (uint32_t entry : merl_file) {
-    std::cerr << "0x" << hex << entry << endl;
+  
+  // Write output to file
+  std::ofstream outfile(output_filename, std::ios::binary);
+  if (!outfile) {
+    std::cerr << "ERROR: Cannot open output file: " << output_filename << std::endl;
+    return 1;
   }
-  std::cerr << endl;
+  
+  if (file_suffix == ".merl") {
+    // Generate MERL file
+    vector<uint32_t> entries_binary = get_entries_binary(export_lables, import_lables, result.symbolTable, result.lable_pc_map);
+    vector<uint32_t> merl_file = get_merl_file(result.assembly_binary_code, entries_binary);
+    
+    // Write MERL file in big-endian format
+    for (uint32_t word : merl_file) {
+      unsigned char c = word >> 24;
+      outfile << c;
+      c = word >> 16;
+      outfile << c;
+      c = word >> 8;
+      outfile << c;
+      c = word;
+      outfile << c;
+    }
+  } else {
+    // Write binary file in big-endian format
+    for (uint32_t word : result.assembly_binary_code) {
+      unsigned char c = word >> 24;
+      outfile << c;
+      c = word >> 16;
+      outfile << c;
+      c = word >> 8;
+      outfile << c;
+      c = word;
+      outfile << c;
+    }
+  }
+  
+  outfile.close();
   return 0;
 }
