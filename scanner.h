@@ -51,6 +51,8 @@ class Token {
       ID = 0,
       LABEL,
       WORD,
+      IMPORT,
+      EXPORT,
       COMMA,
       LPAREN,
       RPAREN,

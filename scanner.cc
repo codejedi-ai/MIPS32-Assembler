@@ -32,6 +32,8 @@ std::ostream &operator<<(std::ostream &out, const Token &tok) {
     case Token::ID:         out << "ID";         break;
     case Token::LABEL:      out << "LABEL";      break;
     case Token::WORD:       out << "WORD";       break;
+    case Token::IMPORT:     out << "IMPORT";     break;
+    case Token::EXPORT:     out << "EXPORT";     break;
     case Token::COMMA:      out << "COMMA";      break;
     case Token::LPAREN:     out << "LPAREN";     break;
     case Token::RPAREN:     out << "RPAREN";     break;
@@ -279,21 +281,24 @@ std::vector<Token> scan(const std::string &input) {
   std::vector<Token> tokens = theDFA.simplifiedMaximalMunch(input);
 
   // We need to:
-  // * Throw exceptions for WORD tokens whose lexemes aren't ".word".
+  // * Throw exceptions for WORD tokens whose lexemes aren't recognized (.word/.import/.export).
   // * Remove WHITESPACE and COMMENT tokens entirely.
 
   std::vector<Token> newTokens;
 
   for (auto &token : tokens) {
     if (token.getKind() == Token::WORD) {
-      if (token.getLexeme() == ".word") {
+      const std::string &lex = token.getLexeme();
+      if (lex == ".word") {
         newTokens.push_back(token);
+      } else if (lex == ".import") {
+        newTokens.push_back(Token(Token::IMPORT, lex));
+      } else if (lex == ".export") {
+        newTokens.push_back(Token(Token::EXPORT, lex));
       } else {
-        throw ScanningFailure("ERROR: DOTID token unrecognized: " +
-            token.getLexeme());
+        throw ScanningFailure("ERROR: DOTID token unrecognized: " + token.getLexeme());
       }
-    } else if (token.getKind() != Token::WHITESPACE
-        && token.getKind() != Token::Kind::COMMENT) {
+    } else if (token.getKind() != Token::WHITESPACE && token.getKind() != Token::Kind::COMMENT) {
       newTokens.push_back(token);
     }
   }

@@ -1,4 +1,17 @@
-lw $0, 0xffff($0)
-sw $1, 0x1234($0)
-lw $2, 0x0000($0)
-sw $3, 0x7fff($0)
+.import foo
+.export bar
+
+sw $31, -4($30)  ; Save return address ($31)
+
+lis $29
+.word foo       ; Load address of external foo into $29
+jalr $29        ; Call foo
+
+lis $3
+.word bar       ; Load address of exported bar into $3
+lw $3, 0($3)    ; Load the value at address bar into $3
+
+lw $31, -4($30) ; Restore return address
+jr $31          ; Return to caller
+
+bar: .word 0    ; Exported data defined here

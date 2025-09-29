@@ -1,124 +1,110 @@
+#include "scanner.h"
+#include <algorithm>
+#include <fstream>
 #include <iostream>
+#include <map>
 #include <string>
 #include <vector>
-#include "scanner.h"
-#include <map>
-#include <algorithm>
 using namespace std;
+class Assembler{
+std::vector<uint32_t> assembly_binary_code;
+std::map<std::string, uint32_t> symbolTable;
+std::map<std::string, vector<uint32_t>> lable_pc_map;
+std::vector<std::string> asm_files;
 
-void coutword(uint32_t a)
-{
-  uint32_t instr = a;
-  unsigned char c = instr;
-  cout << c;
+void writebin(uint32_t instr) { assembly_binary_code.push_back(instr); }
+void coutmult(uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 24; // add $3, $2, $4
+  writebin(instr);
 }
-void printInstruction(uint32_t instr)
-{
-  unsigned char c = instr >> 24;
-  cout << c;
-  c = instr >> 16;
-  cout << c;
-  c = instr >> 8;
-  cout << c;
-  c = instr;
-  cout << c;
+void coutmultu(uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 25; // add $3, $2, $4
+  writebin(instr);
 }
-void coutmult(uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 24; // add $3, $2, $4
-  printInstruction(instr);
+void coutdiv(uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 26; // add $3, $2, $4
+  writebin(instr);
 }
-void coutmultu(uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 25; // add $3, $2, $4
-  printInstruction(instr);
+void coutdivu(uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 27; // add $3, $2, $4
+  writebin(instr);
 }
-void coutdiv(uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 26; // add $3, $2, $4
-  printInstruction(instr);
+void coutAdd(uint32_t d, uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 32; // add $3, $2, $4
+  writebin(instr);
 }
-void coutdivu(uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 27; // add $3, $2, $4
-  printInstruction(instr);
+void coutSub(uint32_t d, uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 34; // add $3, $2, $4
+  writebin(instr);
 }
-void coutAdd(uint32_t d, uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 32; // add $3, $2, $4
-  printInstruction(instr);
+void coutSlt(uint32_t d, uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 42; // add $3, $2, $4
+  writebin(instr);
 }
-void coutSub(uint32_t d, uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 34; // add $3, $2, $4
-  printInstruction(instr);
+void coutSltu(uint32_t d, uint32_t s, uint32_t t) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 43; // add $3, $2, $4
+  writebin(instr);
 }
-void coutSlt(uint32_t d, uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 42; // add $3, $2, $4
-  printInstruction(instr);
-}
-void coutSltu(uint32_t d, uint32_t s, uint32_t t)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 43; // add $3, $2, $4
-  printInstruction(instr);
-}
-void coutBeq(uint32_t s, uint32_t t, uint32_t i)
-{
+void coutBeq(uint32_t s, uint32_t t, uint32_t i) {
   i = i & (0xffff);
   uint32_t instr = (4 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
-  printInstruction(instr);
+  writebin(instr);
 }
-void coutBne(uint32_t s, uint32_t t, uint32_t i)
-{
+void coutBne(uint32_t s, uint32_t t, uint32_t i) {
   i = i & (0xffff);
   uint32_t instr = (5 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
-  printInstruction(instr);
+  writebin(instr);
 }
 
-void jr(uint32_t s)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 8; // add $3, $2, $4
-  printInstruction(instr);
+void jr(uint32_t s) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 8; // add $3, $2, $4
+  writebin(instr);
 }
-void jalr(uint32_t s)
-{
-  uint32_t instr = (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 9; // add $3, $2, $4
-  printInstruction(instr);
+void jalr(uint32_t s) {
+  uint32_t instr =
+      (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 9; // add $3, $2, $4
+  writebin(instr);
 }
-void mfhi(uint32_t d)
-{
-  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 16; // add $3, $2, $4
-  printInstruction(instr);
+void mfhi(uint32_t d) {
+  uint32_t instr =
+      (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 16; // add $3, $2, $4
+  writebin(instr);
 }
-void mflo(uint32_t d)
-{
-  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 18; // add $3, $2, $4
-  printInstruction(instr);
+void mflo(uint32_t d) {
+  uint32_t instr =
+      (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 18; // add $3, $2, $4
+  writebin(instr);
 }
-void lis(uint32_t d)
-{
-  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 20; // add $3, $2, $4
-  printInstruction(instr);
+void lis(uint32_t d) {
+  uint32_t instr =
+      (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 20; // add $3, $2, $4
+  writebin(instr);
 }
-void coutSw(uint32_t t, uint32_t i, uint32_t s)
-{
+void coutSw(uint32_t t, uint32_t i, uint32_t s) {
   i = i & (0xffff);
   uint32_t instr = (43 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
-  printInstruction(instr);
+  writebin(instr);
 }
-void coutLw(uint32_t t, uint32_t i, uint32_t s)
-{
+void coutLw(uint32_t t, uint32_t i, uint32_t s) {
   i = i & (0xffff);
   uint32_t instr = (35 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
-  printInstruction(instr);
+  writebin(instr);
 }
 /*
 add $1, $2, $3
-Token(ID, add) Token(REG, $1) Token(COMMA, ,) Token(REG, $2) Token(COMMA, ,) Token(REG, $3)
+Token(ID, add) Token(REG, $1) Token(COMMA, ,) Token(REG, $2) Token(COMMA, ,)
+Token(REG, $3)
 */
-bool add_sub_slt_sltu(uint32_t ind, std::vector<Token> &vecref)
-{
+bool add_sub_slt_sltu(uint32_t ind, std::vector<Token> &vecref) {
 
   bool sizeMeet = (ind + 6 == vecref.size());
   if (!sizeMeet)
@@ -131,40 +117,36 @@ bool add_sub_slt_sltu(uint32_t ind, std::vector<Token> &vecref)
                        vecref[ind + 5].getKind() == Token::REG;
   if (!structureMeet)
     return false;
-  bool instructionValid = vecref[ind].getLexeme() == "add" ||
-                          vecref[ind].getLexeme() == "sub" ||
-                          vecref[ind].getLexeme() == "slt" ||
-                          vecref[ind].getLexeme() == "sltu";
+  bool instructionValid =
+      vecref[ind].getLexeme() == "add" || vecref[ind].getLexeme() == "sub" ||
+      vecref[ind].getLexeme() == "slt" || vecref[ind].getLexeme() == "sltu";
   if (!instructionValid)
     return false;
   return true;
 }
-bool mult_multu_div_divu(uint32_t ind, std::vector<Token> &vecref)
-{
+bool mult_multu_div_divu(uint32_t ind, std::vector<Token> &vecref) {
   vector<Token> buf = scan("mult $4, $3");
   bool sizeMeet = (ind + buf.size() == vecref.size());
   if (!sizeMeet)
     return false;
   bool structureMeet = true;
 
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
-    structureMeet = structureMeet && (vecref[ind + i].getKind() == buf[i].getKind());
+  for (uint32_t i = 0; i < buf.size(); i++) {
+    structureMeet =
+        structureMeet && (vecref[ind + i].getKind() == buf[i].getKind());
   }
 
   if (!structureMeet)
     return false;
-  bool instructionValid = vecref[ind].getLexeme() == "mult" ||
-                          vecref[ind].getLexeme() == "multu" ||
-                          vecref[ind].getLexeme() == "div" ||
-                          vecref[ind].getLexeme() == "divu";
+  bool instructionValid =
+      vecref[ind].getLexeme() == "mult" || vecref[ind].getLexeme() == "multu" ||
+      vecref[ind].getLexeme() == "div" || vecref[ind].getLexeme() == "divu";
   if (!instructionValid)
     return false;
   return true;
 }
 // Token(ID, lis) Token(REG, $4)
-bool mfhi_mflo_lis(uint32_t ind, std::vector<Token> &vecref)
-{
+bool mfhi_mflo_lis(uint32_t ind, std::vector<Token> &vecref) {
 
   bool sizeMeet = (ind + 2 == vecref.size());
   if (!sizeMeet)
@@ -180,61 +162,55 @@ bool mfhi_mflo_lis(uint32_t ind, std::vector<Token> &vecref)
     return false;
   return true;
 }
-// Token(ID, lw) Token(REG, $4) Token(COMMA, ,) Token(INT, 1) Token(LPAREN, () Token(REG, $3) Token(RPAREN, ))
-bool lw_sw(uint32_t ind, std::vector<Token> &vecref)
-{
+// Token(ID, lw) Token(REG, $4) Token(COMMA, ,) Token(INT, 1) Token(LPAREN, ()
+// Token(REG, $3) Token(RPAREN, ))
+bool lw_sw(uint32_t ind, std::vector<Token> &vecref) {
   vector<Token> buf = scan("lw $4, 1($3)");
   bool sizeMeet = (ind + buf.size() == vecref.size());
   if (!sizeMeet)
     return false;
   bool structureMeet = false;
   bool bufTemp = true;
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
+  for (uint32_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
   buf = scan("lw $4, 0x1($3)");
   bufTemp = true;
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
+  for (uint32_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
   if (!structureMeet)
     return false;
-  bool instructionValid = vecref[ind].getLexeme() == "lw" ||
-                          vecref[ind].getLexeme() == "sw";
+  bool instructionValid =
+      vecref[ind].getLexeme() == "lw" || vecref[ind].getLexeme() == "sw";
   if (!instructionValid)
     return false;
   return true;
 }
-bool beq_bne(uint32_t ind, std::vector<Token> &vecref)
-{
+bool beq_bne(uint32_t ind, std::vector<Token> &vecref) {
   vector<Token> buf = scan("beq $4, $0, i");
   bool sizeMeet = (ind + buf.size() == vecref.size());
   if (!sizeMeet)
     return false;
   bool structureMeet = false;
   bool bufTemp = true;
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
+  for (uint32_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
 
   buf = scan("beq $4, $0, 0x0");
   bufTemp = true;
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
+  for (uint32_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
 
   buf = scan("beq $4, $0, 1");
   bufTemp = true;
-  for (uint32_t i = 0; i < buf.size(); i++)
-  {
+  for (uint32_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
@@ -242,14 +218,13 @@ bool beq_bne(uint32_t ind, std::vector<Token> &vecref)
   if (!structureMeet)
     return false;
 
-  bool instructionValid = vecref[ind].getLexeme() == "beq" ||
-                          vecref[ind].getLexeme() == "bne";
+  bool instructionValid =
+      vecref[ind].getLexeme() == "beq" || vecref[ind].getLexeme() == "bne";
   if (!instructionValid)
     return false;
   return true;
 }
-bool jr_jalr(uint32_t ind, std::vector<Token> &vecref)
-{
+bool jr_jalr(uint32_t ind, std::vector<Token> &vecref) {
 
   bool sizeMeet = (ind + 2 == vecref.size());
   if (!sizeMeet)
@@ -258,39 +233,35 @@ bool jr_jalr(uint32_t ind, std::vector<Token> &vecref)
                        vecref[ind + 1].getKind() == Token::REG;
   if (!structureMeet)
     return false;
-  bool instructionValid = vecref[ind].getLexeme() == "jr" ||
-                          vecref[ind].getLexeme() == "jalr";
+  bool instructionValid =
+      vecref[ind].getLexeme() == "jr" || vecref[ind].getLexeme() == "jalr";
   if (!instructionValid)
     return false;
   return true;
 }
 
-bool word(uint32_t ind, std::vector<Token> &vecref)
-{
+bool word(uint32_t ind, std::vector<Token> &vecref) {
   vector<Token> buf = scan(".word i");
   bool sizeMeet = (ind + buf.size() == vecref.size());
   if (!sizeMeet)
     return false;
   bool structureMeet = false;
   bool bufTemp = true;
-  for (int i = 0; i < buf.size(); i++)
-  {
+  for (size_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
 
   buf = scan(".word 0x0");
   bufTemp = true;
-  for (int i = 0; i < buf.size(); i++)
-  {
+  for (size_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
 
   buf = scan(".word 1");
   bufTemp = true;
-  for (int i = 0; i < buf.size(); i++)
-  {
+  for (size_t i = 0; i < buf.size(); i++) {
     bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
   }
   structureMeet = structureMeet || bufTemp;
@@ -308,24 +279,25 @@ bool word(uint32_t ind, std::vector<Token> &vecref)
  * This file contains the main function of your program. By default, it just
  * prints the scanned list of tokens back to standard output.
  */
-int main()
-{
-  std::string line;
-  std::vector<std::vector<Token>> assemblyProgram;
-  vector<string> instructions{"add", "sub", "mult", "multu", "div", "divu", "mfhi", "mflo", "lis", "lw", "sw", "slt", "sltu", "beq", "bne", "jr", "jalr"};
+public:
+struct AsmReturn{
+  std::vector<uint32_t> assembly_binary_code;
   std::map<std::string, uint32_t> symbolTable;
-  try
-  {
-    while (getline(std::cin, line))
-    {
-      // This example code just prints the scanned tokens on each line.
-      assemblyProgram.push_back(scan(line));
-    }
-  }
-  catch (ScanningFailure &f)
-  {
-    std::cerr << f.what() << std::endl;
-    return 1;
+  std::map<std::string, vector<uint32_t>> lable_pc_map;
+  std::vector<std::string> asm_files;
+  bool error = false;
+};
+void addSourceLine(const std::string &line) { asm_files.push_back(line); }
+void addImportedLabel(const std::string &label) { symbolTable[label] = 0; }
+AsmReturn assemble(uint32_t pc_start) {
+  AsmReturn ret;
+  std::vector<std::vector<Token>> assemblyProgram;
+  vector<string> instructions{"add",  "sub",  "mult", "multu", "div", "divu",
+                              "mfhi", "mflo", "lis",  "lw",    "sw",  "slt",
+                              "sltu", "beq",  "bne",  "jr",    "jalr"};
+
+  for (std::string file : asm_files) {
+    assemblyProgram.push_back(scan(file));
   }
   // You can add your own catch clause(s) for other kinds of errors.
   // Throwing exceptions and catching them is the recommended way to
@@ -334,126 +306,115 @@ int main()
 
   //__________________________________
 
-  uint32_t pc = 0;
-  for (std::vector<Token> line : assemblyProgram)
-  {
+  uint32_t pc = pc_start;
+  for (std::vector<Token> line : assemblyProgram) {
     if (line.empty())
       continue;
 
     uint32_t ind = 0;
     // I CANNOT USE LOOPS OR ELSE I WOULD GET ERROR
     /*
-    Not using the while loop I cannot have infinite lables infront of the instruction
+    Not using the while loop I cannot have infinite lables infront of the
+    instruction
 
     */
-    while (ind < line.size() && line[ind].getKind() == Token::LABEL)
-    {
+    while (ind < line.size() && line[ind].getKind() == Token::LABEL) {
       string buf = line[ind].getLexeme();
       buf.resize(buf.size() - 1);
-      if (symbolTable.count(buf))
-      {
+      if (symbolTable.count(buf)) {
         std::cerr << "ERROR: Duplicate Labels" << std::endl;
-        return 1;
+        ret.error = true;
+        return ret;
       }
       symbolTable[buf] = pc;
       ind++;
     }
     if (ind == line.size())
       continue;
-    // at this point the following MUST be valid instructions if not then the code is invalid
-    bool found = lw_sw(ind, line) || mult_multu_div_divu(ind, line) || mfhi_mflo_lis(ind, line) || beq_bne(ind, line) || word(ind, line) || jr_jalr(ind, line) || add_sub_slt_sltu(ind, line);
+    // at this point the following MUST be valid instructions if not then the
+    // code is invalid
+    bool found = lw_sw(ind, line) || mult_multu_div_divu(ind, line) ||
+                 mfhi_mflo_lis(ind, line) || beq_bne(ind, line) ||
+                 word(ind, line) || jr_jalr(ind, line) ||
+                 add_sub_slt_sltu(ind, line);
 
-    if (!found)
-    {
-      // return error
+    if (!found) {
       std::cerr << "ERROR: Invalid instruction or parameters" << std::endl;
-      return 1;
-    }
-    else
-    {
+      ret.error = true;
+      return ret;
+    } else {
       pc += 4;
     }
   }
 
   // ------------------------------------------------------------------------------------------------------------------
-  pc = 0;
-  for (std::vector<Token> line : assemblyProgram)
-  {
+  pc = pc_start;
+  for (std::vector<Token> line : assemblyProgram) {
     if (line.empty())
       continue;
     uint32_t ind = 0;
-    while (ind < line.size() && line[ind].getKind() == Token::LABEL)
-    {
+    while (ind < line.size() && line[ind].getKind() == Token::LABEL) {
       ind++;
     }
     // token is not a label
     if (ind == line.size())
       continue;
     uint32_t instr = 0;
-    if (ind < line.size() && line[ind].getKind() == Token::WORD)
-    {
-      pc += 4;
+    if (ind < line.size() && line[ind].getKind() == Token::WORD) {
+
       ind++;
       string str = line[ind].getLexeme();
-      if (line[ind].getKind() == Token::ID)
-      {
-        if (symbolTable.count(str) == 0)
-        {
-          std::cerr << "ERROR: Invalid Lable :" << str << std::endl;
-          return 1;
+      if (line[ind].getKind() == Token::ID) {
+        if (symbolTable.count(str) == 0) {
+          std::cerr << "ERROR: Invalid Lablel:" << str << std::endl;
+          ret.error = true;
+          return ret;
         }
         instr = symbolTable[str];
-      }
-      else
-      {
+        // the string need the pc
+        lable_pc_map[str].push_back(pc);
+      } else {
         instr = line[ind].toNumber();
       }
       /*
       if (line[ind].getKind() == Token::INT && instr < 0)
       {
 
-          std::cerr << "ERROR: No negative numbers for .word " << str << std::endl;
-          return 1;
+          std::cerr << "ERROR: No negative numbers for .word " << str <<
+      std::endl; return 1;
       }
       */
-      printInstruction(instr);
-    }
-    else if (line[ind].getKind() == Token::ID)
-    {
       pc += 4;
-      if (line[ind].getLexeme() == "jr")
-      {
+      writebin(instr);
+    } else if (line[ind].getKind() == Token::ID) {
+
+      if (line[ind].getLexeme() == "jr") {
         instr = line[ind + 1].toNumber();
         jr(instr);
       }
-      if (line[ind].getLexeme() == "jalr")
-      {
+      if (line[ind].getLexeme() == "jalr") {
         instr = line[ind + 1].toNumber();
         jalr(instr);
       }
-      if (line[ind].getLexeme() == "add")
-      {
+      if (line[ind].getLexeme() == "add") {
         uint32_t d = line[ind + 1].toNumber();
         uint32_t s = line[ind + 3].toNumber();
         uint32_t t = line[ind + 5].toNumber();
         coutAdd(d, s, t);
       }
-      if (line[ind].getLexeme() == "sub")
-      {
+      if (line[ind].getLexeme() == "sub") {
         uint32_t d = line[ind + 1].toNumber();
         uint32_t s = line[ind + 3].toNumber();
         uint32_t t = line[ind + 5].toNumber();
         coutSub(d, s, t);
       }
-      if (line[ind].getLexeme() == "slt")
-      {
+      if (line[ind].getLexeme() == "slt") {
         uint32_t d = line[ind + 1].toNumber();
         uint32_t s = line[ind + 3].toNumber();
         uint32_t t = line[ind + 5].toNumber();
         coutSlt(d, s, t);
       }
-      if (line[ind].getLexeme() == "sltu")
-      {
+      if (line[ind].getLexeme() == "sltu") {
         uint32_t d = line[ind + 1].toNumber();
         uint32_t s = line[ind + 3].toNumber();
         uint32_t t = line[ind + 5].toNumber();
@@ -461,130 +422,302 @@ int main()
       }
 
       // Question 6
-      if (line[ind].getLexeme() == "beq")
-      {
+      if (line[ind].getLexeme() == "beq") {
         uint32_t s = line[ind + 1].toNumber();
         uint32_t t = line[ind + 3].toNumber();
         uint32_t i = 0;
-        if (line[ind + 5].getKind() == Token::ID)
-        {
-          if (symbolTable.count(line[ind + 5].getLexeme()) == 0)
-          {
-            std::cerr << "ERROR: " << line[ind + 5].getLexeme() << " is an invalid token" << std::endl;
-            return 1;
+        if (line[ind + 5].getKind() == Token::ID) {
+          if (symbolTable.count(line[ind + 5].getLexeme()) == 0) {
+            std::cerr << "ERROR: " << line[ind + 5].getLexeme()
+                      << " is an invalid token" << std::endl;
+            ret.error = true;
+            return ret;
           }
           i = symbolTable[line[ind + 5].getLexeme()] - pc;
           i = i / 4;
-        }
-        else
-        {
+        } else {
           i = line[ind + 5].toNumber();
-          if ((line[ind + 5].getKind() == Token::INT) && !(-32768 <= (int32_t)i && (int32_t)i <= 32767))
-          {
-            std::cerr << "ERROR: Step count out of range. must be -32768 <= i <= 32767" << std::endl;
-            return 1;
+          if ((line[ind + 5].getKind() == Token::INT) &&
+              !(-32768 <= (int32_t)i && (int32_t)i <= 32767)) {
+            std::cerr << "ERROR: Step count out of range. must be -32768 <= i "
+                         "<= 32767"
+                      << std::endl;
+            ret.error = true;
+            return ret;
           }
-          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff)
-          {
-            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff" << std::endl;
-            return 1;
+          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff) {
+            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff"
+                      << std::endl;
+            ret.error = true;
+            return ret;
           }
         }
         coutBeq(s, t, i);
       }
-      if (line[ind].getLexeme() == "bne")
-      {
+      if (line[ind].getLexeme() == "bne") {
         uint32_t s = line[ind + 1].toNumber();
         uint32_t t = line[ind + 3].toNumber();
         uint32_t i = 0;
-        if (line[ind + 5].getKind() == Token::ID)
-        {
-          if (symbolTable.count(line[ind + 5].getLexeme()) == 0)
-          {
-            std::cerr << "ERROR: " << line[ind + 5].getLexeme() << " is an invalid token" << std::endl;
-            return 1;
+        if (line[ind + 5].getKind() == Token::ID) {
+          if (symbolTable.count(line[ind + 5].getLexeme()) == 0) {
+            std::cerr << "ERROR: " << line[ind + 5].getLexeme()
+                      << " is an invalid token" << std::endl;
+            ret.error = true;
+            return ret;
           }
           i = symbolTable[line[ind + 5].getLexeme()] - pc;
           i = i / 4;
-        }
-        else
-        {
+        } else {
           i = line[ind + 5].toNumber();
-          if ((line[ind + 5].getKind() == Token::INT) && !(-32768 <= (int32_t)i && (int32_t)i <= 32767))
-          {
-            std::cerr << "ERROR: Step count out of range. must be -32768 <= i <= 32767" << std::endl;
-            return 1;
+          if ((line[ind + 5].getKind() == Token::INT) &&
+              !(-32768 <= (int32_t)i && (int32_t)i <= 32767)) {
+            std::cerr << "ERROR: Step count out of range. must be -32768 <= i "
+                         "<= 32767"
+                      << std::endl;
+            ret.error = true;
+            return ret;
           }
-          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff)
-          {
-            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff" << std::endl;
-            return 1;
+          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff) {
+            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff"
+                      << std::endl;
+            ret.error = true;
+            return ret;
           }
         }
         coutBne(s, t, i);
       }
       // Problem 7 ughhh completed?? Question 8
-      if (line[ind].getLexeme() == "lis")
-      {
+      if (line[ind].getLexeme() == "lis") {
         instr = line[ind + 1].toNumber();
         lis(instr);
       }
-      if (line[ind].getLexeme() == "mflo")
-      {
+      if (line[ind].getLexeme() == "mflo") {
         instr = line[ind + 1].toNumber();
         mflo(instr);
       }
-      if (line[ind].getLexeme() == "mfhi")
-      {
+      if (line[ind].getLexeme() == "mfhi") {
         instr = line[ind + 1].toNumber();
         mfhi(instr);
       }
+      pc += 4;
     }
     // Question 9
-    if (line[ind].getLexeme() == "mult")
-    {
+    if (line[ind].getLexeme() == "mult") {
       uint32_t s = line[ind + 1].toNumber();
       uint32_t t = line[ind + 3].toNumber();
       coutmult(s, t);
     }
-    if (line[ind].getLexeme() == "multu")
-    {
+    if (line[ind].getLexeme() == "multu") {
       uint32_t s = line[ind + 1].toNumber();
       uint32_t t = line[ind + 3].toNumber();
       coutmultu(s, t);
     }
-    if (line[ind].getLexeme() == "div")
-    {
+    if (line[ind].getLexeme() == "div") {
       uint32_t s = line[ind + 1].toNumber();
       uint32_t t = line[ind + 3].toNumber();
       coutdiv(s, t);
     }
-    if (line[ind].getLexeme() == "divu")
-    {
+    if (line[ind].getLexeme() == "divu") {
       uint32_t s = line[ind + 1].toNumber();
       uint32_t t = line[ind + 3].toNumber();
       coutdivu(s, t);
     }
     // Problem 10
-    if (line[ind].getLexeme() == "sw")
-    {
+    if (line[ind].getLexeme() == "sw") {
       uint32_t t = line[ind + 1].toNumber();
       uint32_t i = line[ind + 3].toNumber();
       uint32_t s = line[ind + 5].toNumber();
       coutSw(t, i, s);
     }
-    if (line[ind].getLexeme() == "lw")
-    {
+    if (line[ind].getLexeme() == "lw") {
       uint32_t t = line[ind + 1].toNumber();
       uint32_t i = line[ind + 3].toNumber();
       uint32_t s = line[ind + 5].toNumber();
       coutLw(t, i, s);
     }
   }
+  ret.assembly_binary_code = assembly_binary_code;
+  ret.symbolTable = symbolTable;
+  ret.lable_pc_map = lable_pc_map;
+  ret.asm_files = asm_files;
+  return ret;
+}
+vector<uint32_t> get_assembly_binary_code() {
+  return assembly_binary_code;
+}
+};
 
-  for (auto const &x : symbolTable)
-  {
-    std::cerr << x.first << " " << x.second << endl;
+void write_assembly_binary_code(uint32_t instr) {
+  unsigned char c = instr >> 24;
+  cout << c;
+  c = instr >> 16;
+  cout << c;
+  c = instr >> 8;
+  cout << c;
+  c = instr;
+  cout << c;
+}
+// struct REL_ENTRY
+struct REL_ENTRY {
+  uint32_t address;
+  REL_ENTRY(uint32_t address) : address(address) {}
+};
+// struct ESR_ENTRY
+struct ESR_ENTRY {
+  uint32_t address;
+  std::string label;
+  ESR_ENTRY(uint32_t address, std::string label)
+      : address(address), label(label) {}
+};
+// struct ESD_ENTRY
+struct ESD_ENTRY {
+  uint32_t address;
+  std::string label;
+  ESD_ENTRY(uint32_t address, std::string label)
+      : address(address), label(label) {}
+};
+
+vector<uint32_t>
+get_entries_binary(std::set<std::string> export_lables,
+                   std::set<std::string> import_lables,
+                   std::map<std::string, uint32_t> symbolTable,
+                   std::map<std::string, vector<uint32_t>> lable_pc_map) {
+  // print the tables to cerr
+  // vector<uint32_t> rel_enteries;
+  // ESR entries
+  // vector<uint32_t> esr_entries;
+  vector<REL_ENTRY> rel_enteries;
+  vector<ESR_ENTRY> esr_entries;
+  vector<ESD_ENTRY> esd_entries;
+  // for each export
+  for (auto const &x : export_lables) {
+    esd_entries.push_back(ESD_ENTRY{symbolTable[x], x});
   }
+  for (auto const &x : lable_pc_map) {
+
+    for (uint32_t pc : x.second) {
+      if (import_lables.count(x.first) == 0) {
+        rel_enteries.push_back(REL_ENTRY{pc});
+      } else {
+        esr_entries.push_back(ESR_ENTRY{pc, x.first});
+      }
+    }
+  }
+  vector<uint32_t> entries_binary;
+  for (auto const &x : rel_enteries) {
+    std::cerr << "Rel entry: " << x.address << endl;
+    entries_binary.push_back(0x00000001);
+    entries_binary.push_back(x.address);
+  }
+  for (auto const &x : esr_entries) {
+    entries_binary.push_back(0x00000011);
+    entries_binary.push_back(x.address);
+    entries_binary.push_back(x.label.length());
+    for (char c : x.label) {
+      entries_binary.push_back(c);
+    }
+  }
+  for (auto const &x : esd_entries) {
+    entries_binary.push_back(0x00000005);
+    entries_binary.push_back(x.address);
+    entries_binary.push_back(x.label.length());
+    for (char c : x.label) {
+      entries_binary.push_back(c);
+    }
+  }
+  // print the entries_binary
+  std::cerr << "Entries binary: " << endl;
+  for (uint32_t entry : entries_binary) {
+    std::cerr << "0x" << hex << entry << endl;
+  }
+  std::cerr << endl;
+  return entries_binary;
+}
+vector<uint32_t> get_merl_file(vector<uint32_t> assembly_binary_code, vector<uint32_t> entries_binary) {
+  // get the cookie
+  uint32_t cookie = 0x10000002;
+  // get the end of file
+  uint32_t end_of_code = assembly_binary_code.size() * 4 + 12;
+  uint32_t end_of_file = entries_binary.size() * 4 + end_of_code;
+  // print the assembly_binary_code
+
+  vector<uint32_t> merl_file;
+  merl_file.push_back(cookie);
+  merl_file.push_back(end_of_file);
+  merl_file.push_back(end_of_code);
+  merl_file.insert(merl_file.end(), assembly_binary_code.begin(),
+                   assembly_binary_code.end());
+  merl_file.insert(merl_file.end(), entries_binary.begin(),
+                   entries_binary.end());
+  // print the merl_file
+
+  // print the merl_file
+  std::cerr << "Merl file: " << endl;
+  for (uint32_t entry : merl_file) {
+    std::cerr << "0x" << hex << entry << endl;
+  }
+  std::cerr << endl;
+
+  return merl_file;
+}
+
+
+
+int main() {
+  Assembler assembler;
+  // import lable from .import make set
+  std::set<std::string> import_lables;
+  // export lable from .export make set
+  std::set<std::string> export_lables;
+  string file_suffix = ".bin";
+  uint32_t pc_start = 0;
+  try {
+    std::string line;
+    while (getline(std::cin, line)) {
+      // Tokenize each input line and treat .import/.export as commands
+      std::vector<Token> toks;
+      try {
+        toks = scan(line);
+      } catch (ScanningFailure &f) {
+        std::cerr << f.what() << std::endl;
+        return 1;
+      }
+      if (!toks.empty()) {
+        if (toks[0].getKind() == Token::IMPORT) {
+          if (toks.size() >= 2 && toks[1].getKind() == Token::ID) {
+            std::string label = toks[1].getLexeme();
+            import_lables.insert(label);
+            assembler.addImportedLabel(label);
+            file_suffix = ".merl";
+            pc_start = 0xc;
+            continue;
+          }
+        } else if (toks[0].getKind() == Token::EXPORT) {
+          if (toks.size() >= 2 && toks[1].getKind() == Token::ID) {
+            std::string label = toks[1].getLexeme();
+            export_lables.insert(label);
+            file_suffix = ".merl";
+            pc_start = 0xc;
+            continue;
+          }
+        }
+      }
+      // Not an import/export directive: treat as assembly source
+      assembler.addSourceLine(line);
+    }
+  } catch (ScanningFailure &f) {
+    std::cerr << f.what() << std::endl;
+    return 1;
+  }
+  Assembler::AsmReturn result = assembler.assemble(pc_start);
+  if (result.error) return 1;
+  vector<uint32_t> entries_binary = get_entries_binary(export_lables, import_lables, result.symbolTable, result.lable_pc_map);
+  vector<uint32_t> merl_file = get_merl_file(result.assembly_binary_code, entries_binary);
+  // print the merl_file
+  std::cerr << "Merl file: " << endl;
+  for (uint32_t entry : merl_file) {
+    std::cerr << "0x" << hex << entry << endl;
+  }
+  std::cerr << endl;
   return 0;
 }
