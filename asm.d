@@ -1,1 +1,1 @@
-asm.o: asm.cc asm.h scanner.h
+asm.o: asm.cc scanner.h

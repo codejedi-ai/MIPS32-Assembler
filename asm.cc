@@ -4,264 +4,302 @@
 #include "scanner.h"
 #include <map>
 #include <algorithm>
-#include <fstream>
 using namespace std;
 
-// ====================
-// OOP Refactor: Word and Instruction Classes
-// ====================
-
-class Word {
-  uint32_t value;
- public:
-  explicit Word(uint32_t v = 0) : value(v) {}
-  uint32_t getValue() const { return value; }
-  void setValue(uint32_t v) { value = v; }
-  void emit() const {
-    unsigned char c = value >> 24; cout << c;
-    c = value >> 16; cout << c;
-    c = value >> 8;  cout << c;
-    c = value;       cout << c;
-  }
-  // Match .word lines
-  static bool matches(int ind, const std::vector<Token> &v) {
-    vector<Token> buf = scan(".word i");
-    if (ind + (int)buf.size() != (int)v.size()) return false;
-    bool ok = true; for (size_t i=0;i<buf.size();++i) ok = ok && (v[ind+(int)i].getKind()==buf[i].getKind());
-    if (!ok) { buf = scan(".word 0x0"); ok = true; for (size_t i=0;i<buf.size();++i) ok = ok && (v[ind+(int)i].getKind()==buf[i].getKind()); }
-    if (!ok) { buf = scan(".word 1");   ok = true; for (size_t i=0;i<buf.size();++i) ok = ok && (v[ind+(int)i].getKind()==buf[i].getKind()); }
-    if (!ok) return false;
-    return v[ind].getKind() == Token::WORD;
-  }
-};
-
-// (moved InstructionFactory below instruction class definitions)
-
-
-class AddInstruction : public Word { public: AddInstruction(int d,int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(d<<11)|32){} static void print(int d,int s,int t){ AddInstruction(d,s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("add $1, $2, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class SubInstruction : public Word { public: SubInstruction(int d,int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(d<<11)|34){} static void print(int d,int s,int t){ SubInstruction(d,s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("sub $1, $2, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class SltInstruction : public Word { public: SltInstruction(int d,int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(d<<11)|42){} static void print(int d,int s,int t){ SltInstruction(d,s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("slt $1, $2, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class SltuInstruction : public Word { public: SltuInstruction(int d,int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(d<<11)|43){} static void print(int d,int s,int t){ SltuInstruction(d,s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("sltu $1, $2, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class MultInstruction : public Word { public: MultInstruction(int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(0<<11)|24){} static void print(int s,int t){ MultInstruction(s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("mult $4, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class MultuInstruction : public Word { public: MultuInstruction(int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(0<<11)|25){} static void print(int s,int t){ MultuInstruction(s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("multu $4, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class DivInstruction : public Word { public: DivInstruction(int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(0<<11)|26){} static void print(int s,int t){ DivInstruction(s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("div $4, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class DivuInstruction : public Word { public: DivuInstruction(int s,int t):Word((0<<26)|(s<<21)|(t<<16)|(0<<11)|27){} static void print(int s,int t){ DivuInstruction(s,t).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("divu $4, $3"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class JrInstruction : public Word { public: JrInstruction(int s):Word((0<<26)|(s<<21)|(0<<16)|(0<<11)|8 ){} static void print(int s){ JrInstruction(s).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("jr $4"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class JalrInstruction : public Word { public: JalrInstruction(int s):Word((0<<26)|(s<<21)|(0<<16)|(0<<11)|9 ){} static void print(int s){ JalrInstruction(s).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("jalr $4"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class MfhiInstruction : public Word { public: MfhiInstruction(int d):Word((0<<26)|(0<<21)|(0<<16)|(d<<11)|16){} static void print(int d){ MfhiInstruction(d).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("mfhi $4"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class MfloInstruction : public Word { public: MfloInstruction(int d):Word((0<<26)|(0<<21)|(0<<16)|(d<<11)|18){} static void print(int d){ MfloInstruction(d).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("mflo $4"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class LisInstruction : public Word { public: LisInstruction(int d):Word((0<<26)|(0<<21)|(0<<16)|(d<<11)|20){} static void print(int d){ LisInstruction(d).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("lis $4"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class LwInstruction : public Word { public: LwInstruction(int t,int i,int s):Word((35<<26)|(s<<21)|(t<<16)|(i&0xffff)){} static void print(int t,int i,int s){ LwInstruction(t,i,s).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("lw $4, 1($3)"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class SwInstruction : public Word { public: SwInstruction(int t,int i,int s):Word((43<<26)|(s<<21)|(t<<16)|(i&0xffff)){} static void print(int t,int i,int s){ SwInstruction(t,i,s).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("sw $4, 1($3)"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t i=0;i<buf.size();++i){ if(v[ind+(int)i].getKind()!=buf[i].getKind()) return false; } return true; } };
-class BeqInstruction : public Word { public: BeqInstruction(int s,int t,int i):Word(( 4<<26)|(s<<21)|(t<<16)|(i&0xffff)){} static void print(int s,int t,int i){ BeqInstruction(s,t,i).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("beq $4, $0, i"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t j=0;j<buf.size();++j){ if(v[ind+(int)j].getKind()!=buf[j].getKind()) return false; } return true; } };
-class BneInstruction : public Word { public: BneInstruction(int s,int t,int i):Word(( 5<<26)|(s<<21)|(t<<16)|(i&0xffff)){} static void print(int s,int t,int i){ BneInstruction(s,t,i).emit(); } static bool matches(int ind,const std::vector<Token>&v){ auto buf=scan("bne $4, $0, i"); if(ind+(int)buf.size()!=(int)v.size()) return false; for(size_t j=0;j<buf.size();++j){ if(v[ind+(int)j].getKind()!=buf[j].getKind()) return false; } return true; } };
-
-void printInstruction(int instr)
+void coutword(uint32_t a)
 {
-  Word(instr).emit();
+  uint32_t instr = a;
+  unsigned char c = instr;
+  cout << c;
+}
+void printInstruction(uint32_t instr)
+{
+  unsigned char c = instr >> 24;
+  cout << c;
+  c = instr >> 16;
+  cout << c;
+  c = instr >> 8;
+  cout << c;
+  c = instr;
+  cout << c;
+}
+void coutmult(uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 24; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutmultu(uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 25; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutdiv(uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 26; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutdivu(uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (0 << 11) | 27; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutAdd(uint32_t d, uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 32; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutSub(uint32_t d, uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 34; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutSlt(uint32_t d, uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 42; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutSltu(uint32_t d, uint32_t s, uint32_t t)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (t << 16) | (d << 11) | 43; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutBeq(uint32_t s, uint32_t t, uint32_t i)
+{
+  i = i & (0xffff);
+  uint32_t instr = (4 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutBne(uint32_t s, uint32_t t, uint32_t i)
+{
+  i = i & (0xffff);
+  uint32_t instr = (5 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
+  printInstruction(instr);
 }
 
-// ====================
-// Instruction Factory using class matchers
-// ====================
-class InstructionFactory {
-public:
-  static bool build(int ind,
-                    const std::vector<Token> &v,
-                    const std::map<std::string,int> &sym,
-                    int pc,
-                    Word &out) {
-    // .word
-    if (Word::matches(ind, v)) {
-      int64_t instr = 0;
-      const Token &tok = v[ind+1];
-      if (tok.getKind() == Token::ID) {
-        std::string lab = tok.getLexeme();
-        auto it = sym.find(lab);
-        if (it == sym.end()) { std::cerr << "ERROR: Invalid Lable :" << lab << std::endl; return false; }
-        instr = it->second;
-      } else {
-        instr = tok.toNumber();
-      }
-      out = Word(static_cast<uint32_t>(instr));
-  return true;
+void jr(uint32_t s)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 8; // add $3, $2, $4
+  printInstruction(instr);
 }
-
-    // jr / jalr
-    if (JrInstruction::matches(ind, v) || JalrInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int s = v[ind+1].toNumber();
-      if (op == "jr") { out = JrInstruction(s); }
-      else { out = JalrInstruction(s); }
-  return true;
+void jalr(uint32_t s)
+{
+  uint32_t instr = (0 << 26) | (s << 21) | (0 << 16) | (0 << 11) | 9; // add $3, $2, $4
+  printInstruction(instr);
 }
-
-    // add/sub/slt/sltu
-    if (AddInstruction::matches(ind, v) || SubInstruction::matches(ind, v) || SltInstruction::matches(ind, v) || SltuInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int d = v[ind+1].toNumber();
-      int s = v[ind+3].toNumber();
-      int t = v[ind+5].toNumber();
-      if (op == "add") out = AddInstruction(d,s,t);
-      else if (op == "sub") out = SubInstruction(d,s,t);
-      else if (op == "slt") out = SltInstruction(d,s,t);
-      else out = SltuInstruction(d,s,t);
-      return true;
-    }
-
-    // beq / bne
-    if (BeqInstruction::matches(ind, v) || BneInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int s = v[ind+1].toNumber();
-      int t = v[ind+3].toNumber();
-      int64_t i = 0;
-      const Token &dest = v[ind+5];
-      if (dest.getKind() == Token::ID) {
-        std::string lab = dest.getLexeme();
-        auto it = sym.find(lab);
-        if (it == sym.end()) { std::cerr << "ERROR: " << lab << " is an invalid token" << std::endl; return false; }
-        i = (it->second - pc) / 4;
-      } else {
-        i = dest.toNumber();
-        if ((dest.getKind() == Token::INT) && !(-32768 <= i && i <= 32767)) { std::cerr << "ERROR: Step count out of range. must be -32768 <= i <= 32767" << std::endl; return false; }
-        if ((dest.getKind() == Token::HEXINT) && i > 0xffff) { std::cerr << "ERROR: Step count out of range. must be i <= 0xffff" << std::endl; return false; }
-      }
-      if (op == "beq") out = BeqInstruction(s,t,static_cast<int>(i));
-      else out = BneInstruction(s,t,static_cast<int>(i));
-  return true;
+void mfhi(uint32_t d)
+{
+  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 16; // add $3, $2, $4
+  printInstruction(instr);
 }
-
-    // lis / mfhi / mflo
-    if (LisInstruction::matches(ind, v) || MfhiInstruction::matches(ind, v) || MfloInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int d = v[ind+1].toNumber();
-      if (op == "lis") out = LisInstruction(d);
-      else if (op == "mfhi") out = MfhiInstruction(d);
-      else out = MfloInstruction(d);
-      return true;
-    }
-
-    // mult/multu/div/divu
-    if (MultInstruction::matches(ind, v) || MultuInstruction::matches(ind, v) || DivInstruction::matches(ind, v) || DivuInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int s = v[ind+1].toNumber();
-      int t = v[ind+3].toNumber();
-      if (op == "mult") out = MultInstruction(s,t);
-      else if (op == "multu") out = MultuInstruction(s,t);
-      else if (op == "div") out = DivInstruction(s,t);
-      else out = DivuInstruction(s,t);
-  return true;
+void mflo(uint32_t d)
+{
+  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 18; // add $3, $2, $4
+  printInstruction(instr);
 }
-
-    // lw / sw
-    if (LwInstruction::matches(ind, v) || SwInstruction::matches(ind, v)) {
-      const std::string op = v[ind].getLexeme();
-      int t = v[ind+1].toNumber();
-      int i = v[ind+3].toNumber();
-      int s = v[ind+5].toNumber();
-      if (op == "lw") out = LwInstruction(t,i,s);
-      else out = SwInstruction(t,i,s);
-  return true;
+void lis(uint32_t d)
+{
+  uint32_t instr = (0 << 26) | (0 << 21) | (0 << 16) | (d << 11) | 20; // add $3, $2, $4
+  printInstruction(instr);
 }
+void coutSw(uint32_t t, uint32_t i, uint32_t s)
+{
+  i = i & (0xffff);
+  uint32_t instr = (43 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
+  printInstruction(instr);
+}
+void coutLw(uint32_t t, uint32_t i, uint32_t s)
+{
+  i = i & (0xffff);
+  uint32_t instr = (35 << 26) | (s << 21) | (t << 16) | i; // add $3, $2, $4
+  printInstruction(instr);
+}
+/*
+add $1, $2, $3
+Token(ID, add) Token(REG, $1) Token(COMMA, ,) Token(REG, $2) Token(COMMA, ,) Token(REG, $3)
+*/
+bool add_sub_slt_sltu(uint32_t ind, std::vector<Token> &vecref)
+{
 
+  bool sizeMeet = (ind + 6 == vecref.size());
+  if (!sizeMeet)
     return false;
-  }
-  static bool matchesAny(int ind, const std::vector<Token>& v) {
-    return Word::matches(ind, v)
-        || JrInstruction::matches(ind, v)
-        || JalrInstruction::matches(ind, v)
-        || AddInstruction::matches(ind, v)
-        || SubInstruction::matches(ind, v)
-        || SltInstruction::matches(ind, v)
-        || SltuInstruction::matches(ind, v)
-        || BeqInstruction::matches(ind, v)
-        || BneInstruction::matches(ind, v)
-        || LisInstruction::matches(ind, v)
-        || MfhiInstruction::matches(ind, v)
-        || MfloInstruction::matches(ind, v)
-        || MultInstruction::matches(ind, v)
-        || MultuInstruction::matches(ind, v)
-        || DivInstruction::matches(ind, v)
-        || DivuInstruction::matches(ind, v)
-        || LwInstruction::matches(ind, v)
-        || SwInstruction::matches(ind, v);
-  }
-};
-// ====================
-// Assembler class (labels table, PC, words output, export)
-// ====================
-class Assembler {
-  std::map<std::string,int> symbolTable;
-  std::vector<std::vector<Token>> tokensByLine;
-  std::vector<Word> words;
-  int pc = 0;
-  int pc_start = 0;
-public:
-  Assembler() : pc_start(0) {}
-  // can set pc_start to x if needed
-  Assembler(int x) : pc_start(x) {}
-  ~Assembler() {}
-  const std::map<std::string,int>& getSymbols() const { return symbolTable; }
-  const std::vector<Word>& getWords() const { return words; }
-  int getPC() const { return pc; }
-
-  int assemble(std::istream &in) {
-    // Scan inputs
-    std::string line;
-    try {
-      while (std::getline(in, line)) {
-        tokensByLine.push_back(scan(line));
-      }
-    } catch (ScanningFailure &f) {
-      std::cerr << f.what() << std::endl; return 1;
-    }
-
-    // First pass: labels and validation
-    pc = pc_start;
-    for (const auto &ln : tokensByLine) {
-      if (ln.empty()) continue;
-      size_t ind = 0;
-      while (ind < ln.size() && ln[ind].getKind() == Token::LABEL) {
-        std::string name = ln[ind].getLexeme(); name.pop_back();
-        if (symbolTable.count(name)) { std::cerr << "ERROR: Duplicate Labels" << std::endl; return 1; }
-        symbolTable[name] = pc; ind++;
-      }
-      if (ind == ln.size()) continue;
-      if (!InstructionFactory::matchesAny(static_cast<int>(ind), ln)) { std::cerr << "ERROR: Invalid instruction or parameters" << std::endl; return 1; }
-      pc += 4;
-    }
-
-    // Second pass: build words
-    words.clear();
-    pc = pc_start;
-    for (const auto &ln : tokensByLine) {
-      if (ln.empty()) continue;
-      size_t ind = 0; while (ind < ln.size() && ln[ind].getKind() == Token::LABEL) { ind++; }
-      if (ind == ln.size()) continue;
-      Word w;
-      if (!InstructionFactory::build(static_cast<int>(ind), ln, symbolTable, pc, w)) { return 1; }
-      words.push_back(w);
-      pc += 4;
-    }
-
-    return 0;
-  }
-
-  bool exportToFile(const std::string &filename) const {
-    std::ofstream out(filename, std::ios::binary);
-    if (!out) return false;
-    for (const Word &w : words) {
-      uint32_t v = w.getValue();
-      unsigned char b0 = v >> 24, b1 = v >> 16, b2 = v >> 8, b3 = v;
-      out.write(reinterpret_cast<const char*>(&b0), 1);
-      out.write(reinterpret_cast<const char*>(&b1), 1);
-      out.write(reinterpret_cast<const char*>(&b2), 1);
-      out.write(reinterpret_cast<const char*>(&b3), 1);
-    }
+  bool structureMeet = vecref[ind].getKind() == Token::ID &&
+                       vecref[ind + 1].getKind() == Token::REG &&
+                       vecref[ind + 2].getKind() == Token::COMMA &&
+                       vecref[ind + 3].getKind() == Token::REG &&
+                       vecref[ind + 4].getKind() == Token::COMMA &&
+                       vecref[ind + 5].getKind() == Token::REG;
+  if (!structureMeet)
+    return false;
+  bool instructionValid = vecref[ind].getLexeme() == "add" ||
+                          vecref[ind].getLexeme() == "sub" ||
+                          vecref[ind].getLexeme() == "slt" ||
+                          vecref[ind].getLexeme() == "sltu";
+  if (!instructionValid)
+    return false;
   return true;
 }
-};
+bool mult_multu_div_divu(uint32_t ind, std::vector<Token> &vecref)
+{
+  vector<Token> buf = scan("mult $4, $3");
+  bool sizeMeet = (ind + buf.size() == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = true;
 
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    structureMeet = structureMeet && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+
+  if (!structureMeet)
+    return false;
+  bool instructionValid = vecref[ind].getLexeme() == "mult" ||
+                          vecref[ind].getLexeme() == "multu" ||
+                          vecref[ind].getLexeme() == "div" ||
+                          vecref[ind].getLexeme() == "divu";
+  if (!instructionValid)
+    return false;
+  return true;
+}
+// Token(ID, lis) Token(REG, $4)
+bool mfhi_mflo_lis(uint32_t ind, std::vector<Token> &vecref)
+{
+
+  bool sizeMeet = (ind + 2 == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = vecref[ind].getKind() == Token::ID &&
+                       vecref[ind + 1].getKind() == Token::REG;
+  if (!structureMeet)
+    return false;
+  bool instructionValid = vecref[ind].getLexeme() == "mfhi" ||
+                          vecref[ind].getLexeme() == "mflo" ||
+                          vecref[ind].getLexeme() == "lis";
+  if (!instructionValid)
+    return false;
+  return true;
+}
+// Token(ID, lw) Token(REG, $4) Token(COMMA, ,) Token(INT, 1) Token(LPAREN, () Token(REG, $3) Token(RPAREN, ))
+bool lw_sw(uint32_t ind, std::vector<Token> &vecref)
+{
+  vector<Token> buf = scan("lw $4, 1($3)");
+  bool sizeMeet = (ind + buf.size() == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = false;
+  bool bufTemp = true;
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+  buf = scan("lw $4, 0x1($3)");
+  bufTemp = true;
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+  if (!structureMeet)
+    return false;
+  bool instructionValid = vecref[ind].getLexeme() == "lw" ||
+                          vecref[ind].getLexeme() == "sw";
+  if (!instructionValid)
+    return false;
+  return true;
+}
+bool beq_bne(uint32_t ind, std::vector<Token> &vecref)
+{
+  vector<Token> buf = scan("beq $4, $0, i");
+  bool sizeMeet = (ind + buf.size() == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = false;
+  bool bufTemp = true;
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  buf = scan("beq $4, $0, 0x0");
+  bufTemp = true;
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  buf = scan("beq $4, $0, 1");
+  bufTemp = true;
+  for (uint32_t i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  if (!structureMeet)
+    return false;
+
+  bool instructionValid = vecref[ind].getLexeme() == "beq" ||
+                          vecref[ind].getLexeme() == "bne";
+  if (!instructionValid)
+    return false;
+  return true;
+}
+bool jr_jalr(uint32_t ind, std::vector<Token> &vecref)
+{
+
+  bool sizeMeet = (ind + 2 == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = vecref[ind].getKind() == Token::ID &&
+                       vecref[ind + 1].getKind() == Token::REG;
+  if (!structureMeet)
+    return false;
+  bool instructionValid = vecref[ind].getLexeme() == "jr" ||
+                          vecref[ind].getLexeme() == "jalr";
+  if (!instructionValid)
+    return false;
+  return true;
+}
+
+bool word(uint32_t ind, std::vector<Token> &vecref)
+{
+  vector<Token> buf = scan(".word i");
+  bool sizeMeet = (ind + buf.size() == vecref.size());
+  if (!sizeMeet)
+    return false;
+  bool structureMeet = false;
+  bool bufTemp = true;
+  for (int i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  buf = scan(".word 0x0");
+  bufTemp = true;
+  for (int i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  buf = scan(".word 1");
+  bufTemp = true;
+  for (int i = 0; i < buf.size(); i++)
+  {
+    bufTemp = bufTemp && (vecref[ind + i].getKind() == buf[i].getKind());
+  }
+  structureMeet = structureMeet || bufTemp;
+
+  bool instructionValid = vecref[ind].getKind() == Token::WORD;
+  if (!instructionValid)
+    return false;
+  return true;
+}
 /*
  * C++ Starter code for CS241 A3
  * All code requires C++14, so if you're getting compile errors make sure to
@@ -272,12 +310,281 @@ public:
  */
 int main()
 {
-  
-  Assembler assembler;
-  int rc = assembler.assemble(cin);
-  if (rc != 0) return rc;
-  for (const Word &w : assembler.getWords()) {
-    w.emit();
+  std::string line;
+  std::vector<std::vector<Token>> assemblyProgram;
+  vector<string> instructions{"add", "sub", "mult", "multu", "div", "divu", "mfhi", "mflo", "lis", "lw", "sw", "slt", "sltu", "beq", "bne", "jr", "jalr"};
+  std::map<std::string, uint32_t> symbolTable;
+  try
+  {
+    while (getline(std::cin, line))
+    {
+      // This example code just prints the scanned tokens on each line.
+      assemblyProgram.push_back(scan(line));
+    }
+  }
+  catch (ScanningFailure &f)
+  {
+    std::cerr << f.what() << std::endl;
+    return 1;
+  }
+  // You can add your own catch clause(s) for other kinds of errors.
+  // Throwing exceptions and catching them is the recommended way to
+  // handle errors and terminate the program cleanly in C++. Do not
+  // use the std::exit function, which may leak memory.
+
+  //__________________________________
+
+  uint32_t pc = 0;
+  for (std::vector<Token> line : assemblyProgram)
+  {
+    if (line.empty())
+      continue;
+
+    uint32_t ind = 0;
+    // I CANNOT USE LOOPS OR ELSE I WOULD GET ERROR
+    /*
+    Not using the while loop I cannot have infinite lables infront of the instruction
+
+    */
+    while (ind < line.size() && line[ind].getKind() == Token::LABEL)
+    {
+      string buf = line[ind].getLexeme();
+      buf.resize(buf.size() - 1);
+      if (symbolTable.count(buf))
+      {
+        std::cerr << "ERROR: Duplicate Labels" << std::endl;
+        return 1;
+      }
+      symbolTable[buf] = pc;
+      ind++;
+    }
+    if (ind == line.size())
+      continue;
+    // at this point the following MUST be valid instructions if not then the code is invalid
+    bool found = lw_sw(ind, line) || mult_multu_div_divu(ind, line) || mfhi_mflo_lis(ind, line) || beq_bne(ind, line) || word(ind, line) || jr_jalr(ind, line) || add_sub_slt_sltu(ind, line);
+
+    if (!found)
+    {
+      // return error
+      std::cerr << "ERROR: Invalid instruction or parameters" << std::endl;
+      return 1;
+    }
+    else
+    {
+      pc += 4;
+    }
+  }
+
+  // ------------------------------------------------------------------------------------------------------------------
+  pc = 0;
+  for (std::vector<Token> line : assemblyProgram)
+  {
+    if (line.empty())
+      continue;
+    uint32_t ind = 0;
+    while (ind < line.size() && line[ind].getKind() == Token::LABEL)
+    {
+      ind++;
+    }
+    // token is not a label
+    if (ind == line.size())
+      continue;
+    uint32_t instr = 0;
+    if (ind < line.size() && line[ind].getKind() == Token::WORD)
+    {
+      pc += 4;
+      ind++;
+      string str = line[ind].getLexeme();
+      if (line[ind].getKind() == Token::ID)
+      {
+        if (symbolTable.count(str) == 0)
+        {
+          std::cerr << "ERROR: Invalid Lable :" << str << std::endl;
+          return 1;
+        }
+        instr = symbolTable[str];
+      }
+      else
+      {
+        instr = line[ind].toNumber();
+      }
+      /*
+      if (line[ind].getKind() == Token::INT && instr < 0)
+      {
+
+          std::cerr << "ERROR: No negative numbers for .word " << str << std::endl;
+          return 1;
+      }
+      */
+      printInstruction(instr);
+    }
+    else if (line[ind].getKind() == Token::ID)
+    {
+      pc += 4;
+      if (line[ind].getLexeme() == "jr")
+      {
+        instr = line[ind + 1].toNumber();
+        jr(instr);
+      }
+      if (line[ind].getLexeme() == "jalr")
+      {
+        instr = line[ind + 1].toNumber();
+        jalr(instr);
+      }
+      if (line[ind].getLexeme() == "add")
+      {
+        uint32_t d = line[ind + 1].toNumber();
+        uint32_t s = line[ind + 3].toNumber();
+        uint32_t t = line[ind + 5].toNumber();
+        coutAdd(d, s, t);
+      }
+      if (line[ind].getLexeme() == "sub")
+      {
+        uint32_t d = line[ind + 1].toNumber();
+        uint32_t s = line[ind + 3].toNumber();
+        uint32_t t = line[ind + 5].toNumber();
+        coutSub(d, s, t);
+      }
+      if (line[ind].getLexeme() == "slt")
+      {
+        uint32_t d = line[ind + 1].toNumber();
+        uint32_t s = line[ind + 3].toNumber();
+        uint32_t t = line[ind + 5].toNumber();
+        coutSlt(d, s, t);
+      }
+      if (line[ind].getLexeme() == "sltu")
+      {
+        uint32_t d = line[ind + 1].toNumber();
+        uint32_t s = line[ind + 3].toNumber();
+        uint32_t t = line[ind + 5].toNumber();
+        coutSltu(d, s, t);
+      }
+
+      // Question 6
+      if (line[ind].getLexeme() == "beq")
+      {
+        uint32_t s = line[ind + 1].toNumber();
+        uint32_t t = line[ind + 3].toNumber();
+        uint32_t i = 0;
+        if (line[ind + 5].getKind() == Token::ID)
+        {
+          if (symbolTable.count(line[ind + 5].getLexeme()) == 0)
+          {
+            std::cerr << "ERROR: " << line[ind + 5].getLexeme() << " is an invalid token" << std::endl;
+            return 1;
+          }
+          i = symbolTable[line[ind + 5].getLexeme()] - pc;
+          i = i / 4;
+        }
+        else
+        {
+          i = line[ind + 5].toNumber();
+          if ((line[ind + 5].getKind() == Token::INT) && !(-32768 <= (int32_t)i && (int32_t)i <= 32767))
+          {
+            std::cerr << "ERROR: Step count out of range. must be -32768 <= i <= 32767" << std::endl;
+            return 1;
+          }
+          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff)
+          {
+            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff" << std::endl;
+            return 1;
+          }
+        }
+        coutBeq(s, t, i);
+      }
+      if (line[ind].getLexeme() == "bne")
+      {
+        uint32_t s = line[ind + 1].toNumber();
+        uint32_t t = line[ind + 3].toNumber();
+        uint32_t i = 0;
+        if (line[ind + 5].getKind() == Token::ID)
+        {
+          if (symbolTable.count(line[ind + 5].getLexeme()) == 0)
+          {
+            std::cerr << "ERROR: " << line[ind + 5].getLexeme() << " is an invalid token" << std::endl;
+            return 1;
+          }
+          i = symbolTable[line[ind + 5].getLexeme()] - pc;
+          i = i / 4;
+        }
+        else
+        {
+          i = line[ind + 5].toNumber();
+          if ((line[ind + 5].getKind() == Token::INT) && !(-32768 <= (int32_t)i && (int32_t)i <= 32767))
+          {
+            std::cerr << "ERROR: Step count out of range. must be -32768 <= i <= 32767" << std::endl;
+            return 1;
+          }
+          if ((line[ind + 5].getKind() == Token::HEXINT) && i > 0xffff)
+          {
+            std::cerr << "ERROR: Step count out of range. must be i <= 0xffff" << std::endl;
+            return 1;
+          }
+        }
+        coutBne(s, t, i);
+      }
+      // Problem 7 ughhh completed?? Question 8
+      if (line[ind].getLexeme() == "lis")
+      {
+        instr = line[ind + 1].toNumber();
+        lis(instr);
+      }
+      if (line[ind].getLexeme() == "mflo")
+      {
+        instr = line[ind + 1].toNumber();
+        mflo(instr);
+      }
+      if (line[ind].getLexeme() == "mfhi")
+      {
+        instr = line[ind + 1].toNumber();
+        mfhi(instr);
+      }
+    }
+    // Question 9
+    if (line[ind].getLexeme() == "mult")
+    {
+      uint32_t s = line[ind + 1].toNumber();
+      uint32_t t = line[ind + 3].toNumber();
+      coutmult(s, t);
+    }
+    if (line[ind].getLexeme() == "multu")
+    {
+      uint32_t s = line[ind + 1].toNumber();
+      uint32_t t = line[ind + 3].toNumber();
+      coutmultu(s, t);
+    }
+    if (line[ind].getLexeme() == "div")
+    {
+      uint32_t s = line[ind + 1].toNumber();
+      uint32_t t = line[ind + 3].toNumber();
+      coutdiv(s, t);
+    }
+    if (line[ind].getLexeme() == "divu")
+    {
+      uint32_t s = line[ind + 1].toNumber();
+      uint32_t t = line[ind + 3].toNumber();
+      coutdivu(s, t);
+    }
+    // Problem 10
+    if (line[ind].getLexeme() == "sw")
+    {
+      uint32_t t = line[ind + 1].toNumber();
+      uint32_t i = line[ind + 3].toNumber();
+      uint32_t s = line[ind + 5].toNumber();
+      coutSw(t, i, s);
+    }
+    if (line[ind].getLexeme() == "lw")
+    {
+      uint32_t t = line[ind + 1].toNumber();
+      uint32_t i = line[ind + 3].toNumber();
+      uint32_t s = line[ind + 5].toNumber();
+      coutLw(t, i, s);
+    }
+  }
+
+  for (auto const &x : symbolTable)
+  {
+    std::cerr << x.first << " " << x.second << endl;
   }
   return 0;
 }

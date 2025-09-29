@@ -94,7 +94,7 @@ class AsmDFA {
       DOT,
       DOTID,
       ZERO,
-      PLUS,
+      ZEROX,
       MINUS,
       DOLLARS,
 
