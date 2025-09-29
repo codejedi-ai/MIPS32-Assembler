@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <iostream>
+#include <map>
+#include <set>
 #include "scannerWrapper.h" // For FileType and ScannerWrapper
 #include "entryManager.h"   // For EntryManager
 
@@ -43,22 +45,55 @@ private:
 
 class BaseAssembler {
 public:
+    BaseAssembler(uint32_t startPC = 0) : debugMode(false), startPC(startPC) {}
     virtual ~BaseAssembler() = default;
     
     // Main assembly interface
     virtual int assemble(std::istream& input) = 0;
     virtual int assemble(const std::string& filename) = 0;
+    int assemble(const std::vector<std::vector<Token>>& tokens);
     
     // Common functionality
-    virtual void setDebugMode(bool debug) = 0;
-    virtual bool isDebugMode() const = 0;
+    virtual void setDebugMode(bool debug) { debugMode = debug; }
+    virtual bool isDebugMode() const { return debugMode; }
     
-    // Output methods
-    virtual void outputToFile(const std::string& filename) = 0;
+    // Output methods with debug mode handling
+    void outputToFile(const std::string& filename) {
+        if (debugMode) {
+            outputDebugFile(filename);
+        } else {
+            outputProductionFile(filename);
+        }
+    }
     virtual void outputToStream(std::ostream& stream) = 0;
     
     // Analysis
     virtual void printAnalysis() const = 0;
+    
+    // Label mapping access
+    const std::map<std::string, uint32_t>& getSymbolTable() const { return symbolTable; }
+
+protected:
+    bool debugMode;
+    uint32_t startPC;
+    
+    // Two-pass assembler methods
+    int firstPass(const std::vector<std::vector<Token>>& tokens);
+    int secondPass(const std::vector<std::vector<Token>>& tokens);
+    
+    // Validation methods
+    int validateInstruction(const std::vector<Token>& line, size_t lineNum, size_t tokenIndex);
+    int validateRegister(const Token& regToken, size_t lineNum);
+    int validateLabel(const std::string& labelName, size_t lineNum);
+    
+    // Symbol table
+    std::map<std::string, uint32_t> symbolTable;
+    std::set<std::string> definedLabels;
+    
+    // Pure virtual methods for derived classes to implement
+    virtual void outputDebugFile(const std::string& filename) = 0;
+    virtual void outputProductionFile(const std::string& filename) = 0;
+    virtual int processInstruction(const std::vector<Token>& line, size_t lineNum, size_t tokenIndex) = 0;
 };
 
 // ============================================================================
@@ -75,18 +110,21 @@ public:
     // BaseAssembler interface
     virtual int assemble(std::istream& input) override;
     virtual int assemble(const std::string& filename) override;
-    virtual void setDebugMode(bool debug) override;
-    virtual bool isDebugMode() const override;
-    virtual void outputToFile(const std::string& filename) override;
     virtual void outputToStream(std::ostream& stream) override;
     virtual void printAnalysis() const override;
     
+    // Debug and production output methods
+    virtual void outputDebugFile(const std::string& filename) override;
+    virtual void outputProductionFile(const std::string& filename) override;
+    
+    // Instruction processing
+    virtual int processInstruction(const std::vector<Token>& line, size_t lineNum, size_t tokenIndex) override;
+    
 private:
-    bool debugMode;
     ScannerWrapper scanner;
+    std::vector<uint32_t> binaryInstructions;
     
     // Assembly methods
-    int processAssembly(const std::vector<std::vector<Token>>& tokens);
     void outputAssemblyFile(const std::string& filename);
 };
 
@@ -104,16 +142,23 @@ public:
     // BaseAssembler interface
     virtual int assemble(std::istream& input) override;
     virtual int assemble(const std::string& filename) override;
-    virtual void setDebugMode(bool debug) override;
-    virtual bool isDebugMode() const override;
-    virtual void outputToFile(const std::string& filename) override;
     virtual void outputToStream(std::ostream& stream) override;
     virtual void printAnalysis() const override;
+    
+    // Debug and production output methods
+    virtual void outputDebugFile(const std::string& filename) override;
+    virtual void outputProductionFile(const std::string& filename) override;
+    
+    // Instruction processing
+    virtual int processInstruction(const std::vector<Token>& line, size_t lineNum, size_t tokenIndex) override;
     
     // MERL-specific methods
     void addRelocationRecord(uint32_t offset);
     void addExternalSymbolReference(const std::string& symbol, uint32_t offset);
     void addExportedSymbolDefinition(const std::string& symbol, uint32_t offset);
+    
+    // MERL directive processing
+    void processMerlDirectives(const std::vector<std::vector<Token>>& tokens);
     
     // Label reference tracking
     void processWordDirective(const std::vector<Token>& tokens, uint32_t pc);
@@ -121,7 +166,6 @@ public:
     std::string extractLabelFromWord(const std::vector<Token>& tokens) const;
     
 private:
-    bool debugMode;
     ScannerWrapper scanner;
     EntryManager entryManager;
     

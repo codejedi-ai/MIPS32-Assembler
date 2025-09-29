@@ -13,6 +13,7 @@ ScannerWrapper::ScannerWrapper() : fileType(FileType::ASSEMBLY) {
 }
 
 FileType ScannerWrapper::scanInput(std::istream& input) {
+    std::cout << "ScannerWrapper::scanInput(std::istream) called" << std::endl;
     clearAnalysis();
     
     std::string line;
@@ -31,6 +32,7 @@ FileType ScannerWrapper::scanInput(std::istream& input) {
     }
     
     analyzeTokens();
+    std::cout << "ScannerWrapper scanned " << tokens.size() << " lines, file type: " << (fileType == FileType::MERL_MODULE ? "MERL_MODULE" : "ASSEMBLY") << std::endl;
     return fileType;
 }
 

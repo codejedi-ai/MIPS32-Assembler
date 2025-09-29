@@ -28,40 +28,38 @@ int main(int argc, char* argv[]) {
         // Create assembler using factory
         std::unique_ptr<BaseAssembler> assembler;
         
+        ScannerWrapper scanner;
         if (!inputFile.empty()) {
-            // Analyze file first
-            ScannerWrapper scanner = AssemblerFactory::analyzeInput(inputFile);
-            scanner.printAnalysis();
-            
-            // Create appropriate assembler with scanner
-            assembler = AssemblerFactory::createAssembler(scanner);
+            scanner = AssemblerFactory::analyzeInput(inputFile);
         } else {
-            // Analyze stdin
-            ScannerWrapper scanner = AssemblerFactory::analyzeInput(std::cin);
-            scanner.printAnalysis();
-            
-            // Create appropriate assembler with scanner
-            assembler = AssemblerFactory::createAssembler(scanner);
+            scanner = AssemblerFactory::analyzeInput(std::cin);
         }
         
-        // Set debug mode
+        scanner.printAnalysis();
+        
+        assembler = AssemblerFactory::createAssembler(scanner);
         assembler->setDebugMode(debugMode);
         
-        // Perform assembly
-        int result;
-        if (!inputFile.empty()) {
-            result = assembler->assemble(inputFile);
-        } else {
-            result = assembler->assemble(std::cin);
-        }
+        int result = assembler->assemble(scanner.getTokens());
         
         // Print final analysis
         assembler->printAnalysis();
         
         if (result == 0) {
-            std::cout << "Assembly completed successfully!" << std::endl;
-        } else {
-            std::cout << "Assembly failed with error code: " << result << std::endl;
+            // Generate output file
+            std::string outputFilename;
+            if (!inputFile.empty()) {
+                size_t dotPos = inputFile.find_last_of('.');
+                if (dotPos != std::string::npos && inputFile.substr(dotPos) == ".asm") {
+                    outputFilename = inputFile.substr(0, dotPos) + ".merl";
+                } else {
+                    outputFilename = inputFile + ".merl";
+                }
+            } else {
+                outputFilename = "output.merl";
+            }
+            
+            assembler->outputToFile(outputFilename);
         }
         
         return result;

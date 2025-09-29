@@ -1,0 +1,16 @@
+=== MERL DEBUG OUTPUT ===
+File: tests/testmerl/debug_merl.tmerl
+Generated from: tests/testmerl/debug_merl.merl
+
+MERL Header:
+  Magic: 0x10000002
+  End of Module: 0x0000000C
+  End of Code: 0x0000000C
+
+REL Entries (0):
+
+ESR Entries (0):
+
+ESD Entries (0):
+
+=== END DEBUG OUTPUT ===

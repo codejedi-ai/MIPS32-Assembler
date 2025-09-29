@@ -1,0 +1,19 @@
+=== MERL DEBUG OUTPUT ===
+File: test_merl_debug.tmerl
+Generated from: test_merl_debug.merl
+
+MERL Header:
+  Magic: 0x10000002
+  End of Module: 0x0000002C
+  End of Code: 0x00000010
+
+REL Entries (1):
+  [0] Offset: 0x00000024
+
+ESR Entries (1):
+  [0] Symbol: foo, Offset: 0x0000000C
+
+ESD Entries (1):
+  [0] Symbol: bar, Offset: 0x00000010
+
+=== END DEBUG OUTPUT ===

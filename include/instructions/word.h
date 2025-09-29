@@ -4,10 +4,14 @@
 
 class Word {
   public:
-    Word();
-    uint32_t getValue() const;
-    void setValue(uint32_t value);
-  private:
-    uint32_t value;
+    Word() = default;
+    virtual ~Word() = default;
+    
+    // Pure virtual methods - making Word abstract
+    virtual uint32_t getValue() const = 0;
+    virtual void setValue(uint32_t value) = 0;
+    
+  protected:
+    uint32_t value = 0;
 };
 #endif
