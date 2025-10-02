@@ -15,3 +15,7 @@ ${EXEC}: ${OBJECTS}
 
 clean:
 	rm ${OBJECTS} ${EXEC} ${DEPENDS}
+# make the systemmerl.cc file into a binary executable
+systemmerl.bin:
+	make ${EXEC}
+	./${EXEC} > systemmerl.bin

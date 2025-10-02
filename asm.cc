@@ -10,6 +10,7 @@ class Assembler{
 std::vector<uint32_t> assembly_binary_code;
 std::map<std::string, uint32_t> symbolTable;
 std::map<std::string, vector<uint32_t>> lable_pc_map;
+std::map<std::string, vector<uint32_t>> branch_reference_map;
 std::vector<std::string> asm_files;
 
 void writebin(uint32_t instr) { assembly_binary_code.push_back(instr); }
@@ -284,6 +285,7 @@ struct AsmReturn{
   std::vector<uint32_t> assembly_binary_code;
   std::map<std::string, uint32_t> symbolTable;
   std::map<std::string, vector<uint32_t>> lable_pc_map;
+  std::map<std::string, vector<uint32_t>> branch_reference_map;
   std::vector<std::string> asm_files;
   bool error = false;
 };
@@ -359,9 +361,12 @@ AsmReturn assemble(uint32_t pc_start) {
     // token is not a label
     if (ind == line.size())
       continue;
+    
+    // Increment PC BEFORE processing instruction
+    pc += 4;
     uint32_t instr = 0;
+    
     if (ind < line.size() && line[ind].getKind() == Token::WORD) {
-
       ind++;
       string str = line[ind].getLexeme();
       if (line[ind].getKind() == Token::ID) {
@@ -384,7 +389,6 @@ AsmReturn assemble(uint32_t pc_start) {
       std::endl; return 1;
       }
       */
-      pc += 4;
       writebin(instr);
     } else if (line[ind].getKind() == Token::ID) {
 
@@ -435,6 +439,8 @@ AsmReturn assemble(uint32_t pc_start) {
           }
           i = symbolTable[line[ind + 5].getLexeme()] - pc;
           i = i / 4;
+          // Track branch reference
+          branch_reference_map[line[ind + 5].getLexeme()].push_back(pc - 4);
         } else {
           i = line[ind + 5].toNumber();
           if ((line[ind + 5].getKind() == Token::INT) &&
@@ -467,6 +473,8 @@ AsmReturn assemble(uint32_t pc_start) {
           }
           i = symbolTable[line[ind + 5].getLexeme()] - pc;
           i = i / 4;
+          // Track branch reference
+          branch_reference_map[line[ind + 5].getLexeme()].push_back(pc - 4);
         } else {
           i = line[ind + 5].toNumber();
           if ((line[ind + 5].getKind() == Token::INT) &&
@@ -499,7 +507,6 @@ AsmReturn assemble(uint32_t pc_start) {
         instr = line[ind + 1].toNumber();
         mfhi(instr);
       }
-      pc += 4;
     }
     // Question 9
     if (line[ind].getLexeme() == "mult") {
@@ -539,6 +546,7 @@ AsmReturn assemble(uint32_t pc_start) {
   ret.assembly_binary_code = assembly_binary_code;
   ret.symbolTable = symbolTable;
   ret.lable_pc_map = lable_pc_map;
+  ret.branch_reference_map = branch_reference_map;
   ret.asm_files = asm_files;
   return ret;
 }
@@ -725,6 +733,17 @@ int main(int argc, char* argv[]) {
   }
   Assembler::AsmReturn result = assembler.assemble(pc_start);
   if (result.error) return 1;
+  
+  // Debug output for branch references
+  std::cerr << "Branch Reference Map:" << std::endl;
+  for (const auto& entry : result.branch_reference_map) {
+    std::cerr << "  " << entry.first << ": ";
+    for (uint32_t pc : entry.second) {
+      std::cerr << "0x" << std::hex << pc << " ";
+    }
+    std::cerr << std::endl;
+  }
+  std::cerr << std::endl;
   
   // Write output to file
   std::ofstream outfile(output_filename, std::ios::binary);
